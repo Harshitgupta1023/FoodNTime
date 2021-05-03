@@ -5,6 +5,7 @@ import Navigator from "./navigation/Navigator";
 import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
 
+import Orders from "./screens/Orders";
 const fetchFonts = () => {
   return Font.loadAsync({
     "roboto-light": require("./assets/fonts/Roboto-Light.ttf"),
