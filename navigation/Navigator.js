@@ -1,8 +1,15 @@
+import { NavigationContainer } from "@react-navigation/native";
 import React from "react";
-import MainNavigator from "./AuthNavigator";
+
+import AuthNavigator from "./AuthNavigator";
 import UserNavigator from "./UserNavigator";
-function Navigator() {
-  return <UserNavigator />;
-}
+
+const Navigator = () => {
+  return (
+    <NavigationContainer>
+      <AuthNavigator />
+    </NavigationContainer>
+  );
+};
 
 export default Navigator;

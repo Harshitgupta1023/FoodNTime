@@ -2,7 +2,6 @@ import React from "react";
 import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
-import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
@@ -24,7 +23,7 @@ const tabBarOption =
     : {
         activeTintColor: Colors.accentColor,
       };
-function UserTab() {
+const UserTab = () => {
   return (
     <Tab.Navigator {...tabBarOption}>
       <Tab.Screen
@@ -61,42 +60,40 @@ function UserTab() {
       />
     </Tab.Navigator>
   );
-}
+};
 
 const Stack = createStackNavigator();
 
-function UserNavigator() {
+const UserNavigator = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Meals"
-          component={UserTab}
-          options={({ navigation, route }) => ({
-            headerTitle:
-              getFocusedRouteNameFromRoute(route) === "undefined"
-                ? meals
-                : getFocusedRouteNameFromRoute(route),
-            headerRight: () => (
-              <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
-                <Item
-                  title="fav"
-                  iconName="cart-outline"
-                  onPress={() => navigation.navigate("cart")}
-                />
-                <Item
-                  title="fav"
-                  iconName="notifications-outline"
-                  onPress={() => alert("search")}
-                />
-              </HeaderButtons>
-            ),
-          })}
-        />
-        <Stack.Screen name="cart" component={Cart} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Meals"
+        component={UserTab}
+        options={({ navigation, route }) => ({
+          headerTitle:
+            getFocusedRouteNameFromRoute(route) === "undefined"
+              ? meals
+              : getFocusedRouteNameFromRoute(route),
+          headerRight: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
+              <Item
+                title="fav"
+                iconName="cart-outline"
+                onPress={() => navigation.navigate("cart")}
+              />
+              <Item
+                title="fav"
+                iconName="notifications-outline"
+                onPress={() => alert("search")}
+              />
+            </HeaderButtons>
+          ),
+        })}
+      />
+      <Stack.Screen name="cart" component={Cart} />
+    </Stack.Navigator>
   );
-}
+};
 
 export default UserNavigator;

@@ -1,16 +1,26 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { Button } from "react-native-elements";
+
+import firebase from "../config/Firebase";
+
 const StartUpScreen = (props) => {
   return (
     <View style={styles.screen}>
-      <Text style={{ fontFamily: "roboto-light" }}>
+      <Text style={{ margin: 20, fontFamily: "roboto-light" }}>
         This is Start UP Screen!!!
       </Text>
       <Button
-        title="GO"
+        raised={true}
+        title="START"
         onPress={() => {
-          props.navigation.navigate("authentication");
+          var user = firebase.auth().currentUser;
+          if (user) {
+            props.navigation.replace("Food N Time");
+          }
+          props.navigation.replace("Authentication");
         }}
+        buttonStyle={{ width: 100 }}
       />
     </View>
   );

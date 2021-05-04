@@ -1,39 +1,52 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
-
-import NewInputText from "../components/NewInputText";
+import { View, StyleSheet } from "react-native";
+import { Input, Button } from "react-native-elements";
 import firebase from "../config/Firebase";
 
 const SignUpScreen = (props) => {
   const [email, setEmail] = useState("asd");
-  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
 
   const onSignUp = async () => {
-    console.log(email, password);
     await firebase.auth().createUserWithEmailAndPassword(email, password);
     var user = firebase.auth().currentUser;
-    console.log(user);
+    await user.updateProfile({
+      displayName: fullName,
+    });
+    props.navigation.replace("Food N Time");
   };
 
   return (
     <View style={styles.screen}>
       <View></View>
       <View style={styles.inputcontainer}>
-        <Text>UserName </Text>
-        <NewInputText
-          onChangeText={(eve) => setUsername(eve)}
-          value={username}
+        <Input
+          placeholder="Enter your Name"
+          onChangeText={(eve) => setFullName(eve)}
+          label="Full Name"
+          leftIcon={{ type: "entypo", name: "user" }}
         />
-        <Text>Email </Text>
-        <NewInputText onChangeText={(eve) => setEmail(eve)} value={email} />
-        <Text> Password </Text>
-        <NewInputText
+        <Input
+          placeholder="email@address.com"
+          onChangeText={(eve) => setEmail(eve)}
+          label="Email Address"
+          leftIcon={{ type: "materials-icons", name: "mail" }}
+        />
+        <Input
+          placeholder=" Password"
+          secureTextEntry={true}
           onChangeText={(eve) => setPassword(eve)}
-          value={password}
+          label="Password"
+          leftIcon={{ type: "font-awesome", name: "lock" }}
         />
       </View>
-      <Button title="SUBMIT" onPress={onSignUp} />
+      <Button
+        raised={true}
+        title="Sign Up"
+        onPress={onSignUp}
+        buttonStyle={{ width: 100 }}
+      />
     </View>
   );
 };

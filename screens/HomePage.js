@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-export default function HomePage() {
+const HomePage = (props) => {
   return (
     <View style={styles.screen}>
       <Text>MEALSS</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   screen: {
@@ -15,3 +15,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export default HomePage;

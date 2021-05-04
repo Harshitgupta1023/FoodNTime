@@ -1,12 +1,12 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-export default function Orders() {
+const Orders = (props) => {
   return (
     <View style={styles.screen}>
       <Text>Orders</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   screen: {
@@ -15,3 +15,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export default Orders;
