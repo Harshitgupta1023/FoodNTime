@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-const Cart = async () => {
+const Cart = (props) => {
   return (
     <View style={styles.screen}>
       <Text>CART</Text>
