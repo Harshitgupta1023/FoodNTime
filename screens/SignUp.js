@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button, CheckBox } from "react-native-elements";
 import Firebase from "../config/Firebase";
+import { ActivityIndicator, Colors } from "react-native-paper";
 
 const SignUpScreen = (props) => {
   var db = Firebase.firestore();
@@ -11,8 +12,10 @@ const SignUpScreen = (props) => {
   const [storeAddress, setStoreAddress] = useState("");
   const [password, setPassword] = useState("");
   const [isVendor, setIsVendor] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSignUp = async () => {
+    setIsLoading(true);
     if (!isVendor) {
       await Firebase.auth().createUserWithEmailAndPassword(email, password);
       var user = Firebase.auth().currentUser;
@@ -50,6 +53,7 @@ const SignUpScreen = (props) => {
         props.navigation.replace("Vendor Dashboard");
       }
     }
+    setIsLoading(false);
   };
 
   return (
@@ -108,6 +112,11 @@ const SignUpScreen = (props) => {
             leftIcon={{ type: "font-awesome", name: "lock" }}
           />
         </View>
+        <ActivityIndicator
+          animating={isLoading}
+          size="large"
+          color={Colors.red800}
+        />
         <Button
           raised={true}
           title="Sign Up"

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
+import { ActivityIndicator, Colors } from "react-native-paper";
 
 import firebase from "firebase";
 import * as Google from "expo-google-app-auth";
@@ -11,8 +12,10 @@ import Firebase from "../config/Firebase";
 const LoginScreen = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   var db = Firebase.firestore();
   const onLogIn = async () => {
+    setIsLoading(true);
     await Firebase.auth().signInWithEmailAndPassword(email, password);
     var user = Firebase.auth().currentUser;
     if (user) {
@@ -29,8 +32,10 @@ const LoginScreen = (props) => {
           }
         });
     }
+    setIsLoading(false);
   };
   const onGoogleLogin = async () => {
+    setIsLoading(true);
     const isUserEqual = (googleUser, firebaseUser) => {
       if (firebaseUser) {
         var providerData = firebaseUser.providerData;
@@ -91,6 +96,7 @@ const LoginScreen = (props) => {
     } catch (err) {
       console.log(err);
     }
+    setIsLoading(false);
   };
   return (
     <View style={styles.screen}>
@@ -109,6 +115,11 @@ const LoginScreen = (props) => {
           leftIcon={{ type: "font-awesome", name: "lock" }}
         />
       </View>
+      <ActivityIndicator
+        animating={isLoading}
+        size="large"
+        color={Colors.red800}
+      />
       <View style={styles.button}>
         <Button
           raised={true}
