@@ -1,6 +1,7 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
+import { FontAwesome } from "@expo/vector-icons";
 
 import StartUpScreen from "../screens/GetStarted";
 import LoginScreen from "../screens/Login";
@@ -8,6 +9,7 @@ import SignUpScreen from "../screens/SignUp";
 import UserNavigator from "./UserNavigator";
 
 import { Text } from "react-native";
+import VendorNavigator from "./VendorNavigator";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -19,6 +21,11 @@ const MainNavigator = () => {
         component={LoginScreen}
         options={{
           tabBarLabel: <Text style={{ fontSize: 16 }}>LogIn</Text>,
+          tabBarIcon: (tabInfo) => {
+            return (
+              <FontAwesome name="sign-in" size={25} color={tabInfo.color} />
+            );
+          },
         }}
       />
       <Tab.Screen
@@ -26,6 +33,11 @@ const MainNavigator = () => {
         component={SignUpScreen}
         options={{
           tabBarLabel: <Text style={{ fontSize: 16 }}>SignUp</Text>,
+          tabBarIcon: (tabInfo) => {
+            return (
+              <FontAwesome name="user-plus" size={23} color={tabInfo.color} />
+            );
+          },
         }}
       />
     </Tab.Navigator>
@@ -40,6 +52,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="StartUp" component={StartUpScreen} />
       <Stack.Screen name="Authentication" component={MainNavigator} />
       <Stack.Screen name="Food N Time" component={UserNavigator} />
+      <Stack.Screen name="Vendor Dashboard" component={VendorNavigator} />
     </Stack.Navigator>
   );
 };

@@ -8,6 +8,20 @@ const Profile = (props) => {
     await firebase.auth().signOut();
     props.navigation.replace("StartUp");
   };
+  // Create the file metadata
+  // let file = await ImagePicker.launchImageLibraryAsync();
+  // var storageRef = firebase.storage().ref();
+  // var metadata = {
+  //   contentType: "image/jpeg",
+  // };
+  // const response = await fetch(file.uri);
+  // const blob = await response.blob();
+
+  // // Upload file and metadata to the object 'images/mountains.jpg'
+  // var loc = "images/" + Date.now().toString() + ".jpg";
+  // await storageRef.child(loc).put(blob, metadata);
+  // console.log(await storageRef.child(loc).getDownloadURL());
+  // storageRef.child(loc).delete();
   return (
     <View style={styles.screen}>
       <Text>Profile</Text>

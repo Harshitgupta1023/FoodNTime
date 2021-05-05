@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button, CheckBox } from "react-native-elements";
-import firebase from "../config/Firebase";
+import Firebase from "../config/Firebase";
 
 const SignUpScreen = (props) => {
+  var db = Firebase.firestore();
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [storeName, setStoreName] = useState("");
@@ -12,22 +13,42 @@ const SignUpScreen = (props) => {
   const [isVendor, setIsVendor] = useState(true);
 
   const onSignUp = async () => {
-    await firebase.auth().createUserWithEmailAndPassword(email, password);
-    var user = firebase.auth().currentUser;
-    if (user) {
-      await user.updateProfile({
-        displayName: fullName,
-      });
-      db.collection("users")
-        .doc(user.uid)
-        .set({ cart: [], orders: [], rating: 5 })
-        .then(() => {
-          console.log("Document successfully written!");
-        })
-        .catch((error) => {
-          console.error("Error writing document: ", error);
+    if (!isVendor) {
+      await Firebase.auth().createUserWithEmailAndPassword(email, password);
+      var user = Firebase.auth().currentUser;
+      if (user) {
+        await user.updateProfile({
+          displayName: fullName,
         });
-      props.navigation.replace("Food N Time");
+        db.collection("users")
+          .doc(user.uid)
+          .set({ cart: [], orders: [], rating: 5 })
+          .then(() => {
+            console.log("Document successfully written!");
+          })
+          .catch((error) => {
+            console.error("Error writing document: ", error);
+          });
+        props.navigation.replace("Food N Time");
+      }
+    } else {
+      await Firebase.auth().createUserWithEmailAndPassword(email, password);
+      var store = Firebase.auth().currentUser;
+      if (store) {
+        await store.updateProfile({
+          displayName: storeName,
+        });
+        db.collection("vendors")
+          .doc(store.uid)
+          .set({ rating: [], orders: [], address: storeAddress })
+          .then(() => {
+            console.log("Document successfully written!");
+          })
+          .catch((error) => {
+            console.error("Error writing document: ", error);
+          });
+        props.navigation.replace("Vendor Dashboard");
+      }
     }
   };
 
