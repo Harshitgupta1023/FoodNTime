@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
 
-import firebase from "../config/Firebase";
+import Firebase from "../config/Firebase";
 
 const StartUpScreen = (props) => {
   return (
@@ -14,7 +14,7 @@ const StartUpScreen = (props) => {
         raised={true}
         title="START"
         onPress={() => {
-          var user = firebase.auth().currentUser;
+          var user = Firebase.auth().currentUser;
           if (user) {
             props.navigation.replace("Food N Time");
           }
