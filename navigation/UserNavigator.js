@@ -1,5 +1,4 @@
 import React from "react";
-import { Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
@@ -14,15 +13,10 @@ import Cart from "../screens/Cart";
 import HeaderButtonss from "../components/HeaderButtonss";
 import Colors from "../constants/colors";
 const Tab = createMaterialBottomTabNavigator();
-const tabBarOption =
-  Platform.OS === "android"
-    ? {
-        activeColor: Colors.primaryColor,
-        shifting: true,
-      }
-    : {
-        activeTintColor: Colors.accentColor,
-      };
+const tabBarOption = {
+  activeColor: Colors.primaryColor,
+  shifting: true,
+};
 const UserTab = () => {
   return (
     <Tab.Navigator {...tabBarOption}>

@@ -11,13 +11,13 @@ import Firebase from "../config/Firebase";
 const LoginScreen = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  var db = Firebase.firestore();
   const onLogIn = async () => {
     await Firebase.auth().signInWithEmailAndPassword(email, password);
     var user = Firebase.auth().currentUser;
     if (user) {
       props.navigation.replace("Food N Time");
     }
-
     // Create the file metadata
     // let file = await ImagePicker.launchImageLibraryAsync();
     // var storageRef = firebase.storage().ref();
