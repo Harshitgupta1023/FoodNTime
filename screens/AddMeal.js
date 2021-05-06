@@ -5,14 +5,33 @@ import CourseType from "../components/CourseType";
 import MealCategory from "../components/MealCategory";
 import Icon from "react-native-vector-icons/Entypo";
 import * as ImagePicker from "expo-image-picker";
+import Firebase from "../config/Firebase";
+import { ActivityIndicator, Colors } from "react-native-paper";
+
+const makeID = (length) => {
+  var result = [];
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result.push(
+      characters.charAt(Math.floor(Math.random() * charactersLength))
+    );
+  }
+  return result.join("");
+};
 
 const AddMeal = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [courseType, setCourseType] = useState();
+  const [name, setName] = useState("");
   const [isVeg, setIsVeg] = useState(false);
   const [discount, setDiscount] = useState("");
   const [price, setPrice] = useState("");
   const [time, setTime] = useState("");
   const [filePath, setFilePath] = useState("");
+
+  var db = Firebase.firestore();
 
   const discountHandler = (input) => {
     setDiscount(input.replace(/[^0-9]/g, ""));
@@ -28,25 +47,66 @@ const AddMeal = (props) => {
     let file = await ImagePicker.launchImageLibraryAsync();
     setFilePath(file.uri);
   };
-  // Create the file metadata
-  // var storageRef = firebase.storage().ref();
-  // var metadata = {
-  //   contentType: "image/jpeg",
-  // };
-  // const response = await fetch(file.uri);
-  // const blob = await response.blob();
 
-  // // Upload file and metadata to the object 'images/mountains.jpg'
-  // var loc = "images/" + Date.now().toString() + ".jpg";
-  // await storageRef.child(loc).put(blob, metadata);
-  // console.log(await storageRef.child(loc).getDownloadURL());
-  // storageRef.child(loc).delete();
+  const onSubmit = async () => {
+    setIsLoading(true);
+    // Create the file metadata
+    var storageRef = Firebase.storage().ref();
+    var metadata = {
+      contentType: "image/jpeg",
+    };
+    const response = await fetch(filePath);
+    const blob = await response.blob();
+    // Upload file and metadata to the object 'images/mountains.jpg'
+    var loc = "meals/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
+    await storageRef.child(loc).put(blob, metadata);
+    // create doc to be inserted
+    var doc = {
+      imageURL: loc,
+      name: name,
+      price: parseInt(price),
+      discount: parseInt(discount),
+      starter: false,
+      dessert: false,
+      mainCourse: false,
+      vegetarian: false,
+      nonVeg: true,
+      vendorID: Firebase.auth().currentUser.uid,
+    };
+    if (courseType === 1) {
+      doc.starter = true;
+    } else if (courseType == 2) {
+      doc.mainCourse = true;
+    } else if (courseType == 3) {
+      doc.dessert = true;
+    }
+    if (isVeg) {
+      doc.vegetarian = true;
+      doc.nonVeg = false;
+    }
+    // Writing the doc to FireStore
+    db.collection("meals")
+      .doc(makeID(16))
+      .set(doc)
+      .then(() => {
+        console.log("Document successfully written!");
+        props.navigation.pop();
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+        setIsLoading(false);
+      });
+    // console.log(await storageRef.child(loc).getDownloadURL());
+    // storageRef.child(loc).delete();
+  };
   return (
     <View style={styles.screen}>
       <ScrollView>
         <Input
           placeholder="Enter meal name"
-          // onChangeText={(eve) => setEmail(eve)}
+          onChangeText={(eve) => setName(eve)}
+          value={name}
           label="Meal Name"
         />
         <Text style={styles.text}>Course Type</Text>
@@ -93,9 +153,9 @@ const AddMeal = (props) => {
             />
           </View>
         ) : null}
-
+        <ActivityIndicator animating={isLoading} size="large" color="blue" />
         <View style={styles.submit}>
-          <Button raised={true} title="Add Meal" />
+          <Button raised={true} title="Add Meal" onPress={onSubmit} />
         </View>
       </ScrollView>
     </View>
