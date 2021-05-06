@@ -6,12 +6,13 @@ const VendorDashBoard = (props) => {
   return (
     <View style={styles.screen}>
       <Text>YOUR MEAL OFFERINGS</Text>
-      <FAB
-        style={styles.fab}
-        large
-        icon="plus"
-        onPress={() => props.navigation.navigate("Add Meal")}
-      />
+      <View style={styles.fab}>
+        <FAB
+          large
+          icon="plus"
+          onPress={() => props.navigation.navigate("Add Meal")}
+        />
+      </View>
     </View>
   );
 };
@@ -21,6 +22,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  fab: {
+    paddingLeft: "70%",
+    paddingTop: 300,
   },
 });
 
