@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Input, Button } from "react-native-elements";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import Firebase from "../config/Firebase";
 
 const ForgotPassword = (props) => {

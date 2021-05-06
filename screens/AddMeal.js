@@ -6,7 +6,7 @@ import MealCategory from "../components/MealCategory";
 import Icon from "react-native-vector-icons/Entypo";
 import * as ImagePicker from "expo-image-picker";
 import Firebase from "../config/Firebase";
-import { ActivityIndicator, Colors } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 
 const makeID = (length) => {
   var result = [];

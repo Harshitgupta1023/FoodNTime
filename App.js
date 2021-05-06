@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet } from "react-native";
 
 import Navigator from "./navigation/Navigator";
 import AppLoading from "expo-app-loading";
