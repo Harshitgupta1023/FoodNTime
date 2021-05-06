@@ -11,7 +11,7 @@ const SignUpScreen = (props) => {
   const [storeName, setStoreName] = useState("");
   const [storeAddress, setStoreAddress] = useState("");
   const [password, setPassword] = useState("");
-  const [isVendor, setIsVendor] = useState(true);
+  const [isVendor, setIsVendor] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const onSignUp = async () => {

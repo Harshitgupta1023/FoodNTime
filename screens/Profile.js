@@ -1,12 +1,21 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Button } from "react-native-elements";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 import firebase from "../config/Firebase";
 const Profile = (props) => {
   const onSignOut = async () => {
-    await firebase.auth().signOut();
-    props.navigation.replace("StartUp");
+    try {
+      await firebase.auth().signOut();
+      props.navigation.replace("StartUp");
+    } catch (err) {
+      showMessage({
+        message: "Error",
+        description: err.message,
+        type: "danger",
+      });
+    }
   };
   // Create the file metadata
   // let file = await ImagePicker.launchImageLibraryAsync();
@@ -31,6 +40,7 @@ const Profile = (props) => {
         onPress={onSignOut}
         buttonStyle={{ width: 100 }}
       />
+      <FlashMessage position="bottom" />
     </View>
   );
 };

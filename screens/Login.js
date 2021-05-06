@@ -1,36 +1,46 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { Fragment, useState } from "react";
+import { View, StyleSheet, Text } from "react-native";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { ActivityIndicator, Colors } from "react-native-paper";
+import { Formik } from "formik";
+import FlashMessage, { showMessage } from "react-native-flash-message";
 
 import firebase from "firebase";
 import * as Google from "expo-google-app-auth";
 import Firebase from "../config/Firebase";
+import LoginValidator from "../validator/LoginValidator";
 
 const LoginScreen = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   var db = Firebase.firestore();
-  const onLogIn = async () => {
+  const onLogIn = async (email, password) => {
     setIsLoading(true);
-    await Firebase.auth().signInWithEmailAndPassword(email, password);
-    var user = Firebase.auth().currentUser;
-    if (user) {
-      await db
-        .collection("users")
-        .doc(user.uid)
-        .get()
-        .then((doc) => {
-          if (doc.exists) {
-            props.navigation.replace("Food N Time");
-          } else {
-            // doc.data() will be undefined in this case
-            props.navigation.replace("Vendor Dashboard");
-          }
-        });
+    try {
+      await Firebase.auth().signInWithEmailAndPassword(email, password);
+      var user = Firebase.auth().currentUser;
+      if (user) {
+        await db
+          .collection("users")
+          .doc(user.uid)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              props.navigation.replace("Food N Time");
+            } else {
+              // doc.data() will be undefined in this case
+              props.navigation.replace("Vendor Dashboard");
+            }
+          });
+      }
+    } catch (err) {
+      showMessage({
+        message: "Login Error",
+        description: err.message,
+        type: "danger",
+      });
     }
+
     setIsLoading(false);
   };
   const onGoogleLogin = async () => {
@@ -91,42 +101,79 @@ const LoginScreen = (props) => {
       });
       if (googleUser.type === "success") {
         onSignIn(googleUser);
+      } else {
+        showMessage({
+          message: "Login Error",
+          description: "Some Error Occurred",
+          type: "danger",
+        });
       }
     } catch (err) {
-      console.log(err);
+      showMessage({
+        message: "Login Error",
+        description: err.message,
+        type: "danger",
+      });
     }
     setIsLoading(false);
   };
   return (
     <View style={styles.screen}>
-      <View style={styles.inputcontainer}>
-        <Input
-          placeholder="email@address.com"
-          onChangeText={(eve) => setEmail(eve)}
-          label="Email Address"
-          leftIcon={{ type: "materials-icons", name: "mail" }}
-        />
-        <Input
-          placeholder=" Password"
-          secureTextEntry={true}
-          onChangeText={(eve) => setPassword(eve)}
-          label="Password"
-          leftIcon={{ type: "font-awesome", name: "lock" }}
-        />
-      </View>
-      <ActivityIndicator
-        animating={isLoading}
-        size="large"
-        color={Colors.red800}
-      />
-      <View style={styles.button}>
-        <Button
-          raised={true}
-          title="Log In"
-          onPress={onLogIn}
-          buttonStyle={{ width: 100 }}
-        />
-      </View>
+      <Formik
+        initialValues={{ email: "", password: "" }}
+        onSubmit={(values) => {
+          onLogIn(values.email, values.password);
+        }}
+        validationSchema={LoginValidator}
+      >
+        {({
+          values,
+          errors,
+          handleChange,
+          touched,
+          handleBlur,
+          handleSubmit,
+        }) => (
+          <Fragment>
+            <View style={styles.inputcontainer}>
+              <Input
+                placeholder="email@address.com"
+                onChangeText={handleChange("email")}
+                label="Email Address"
+                leftIcon={{ type: "materials-icons", name: "mail" }}
+                value={values.email}
+                onBlur={handleBlur("email")}
+                errorStyle={{ color: "red" }}
+                errorMessage={touched.email && errors.email}
+              />
+              <Input
+                placeholder=" Password"
+                secureTextEntry={true}
+                onChangeText={handleChange("password")}
+                label="Password"
+                leftIcon={{ type: "font-awesome", name: "lock" }}
+                value={values.password}
+                onBlur={handleBlur("password")}
+                errorStyle={{ color: "red" }}
+                errorMessage={touched.password && errors.password}
+              />
+            </View>
+            <ActivityIndicator
+              animating={isLoading}
+              size="large"
+              color={Colors.red800}
+            />
+            <View style={styles.button}>
+              <Button
+                raised={true}
+                title="Log In"
+                onPress={handleSubmit}
+                buttonStyle={{ width: 100 }}
+              />
+            </View>
+          </Fragment>
+        )}
+      </Formik>
       <View style={styles.button}>
         <Button
           icon={<Icon name="google" size={25} color="white" />}
@@ -140,6 +187,7 @@ const LoginScreen = (props) => {
           }}
         />
       </View>
+      <FlashMessage position="bottom" />
     </View>
   );
 };
