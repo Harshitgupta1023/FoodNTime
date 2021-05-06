@@ -10,6 +10,7 @@ import UserNavigator from "./UserNavigator";
 
 import { Text } from "react-native";
 import VendorNavigator from "./VendorNavigator";
+import AddMeal from "../screens/AddMeal";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -57,6 +58,7 @@ const AuthNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Vendor Dashboard" component={VendorNavigator} />
+      <Stack.Screen name="Add Meal" component={AddMeal} />
     </Stack.Navigator>
   );
 };

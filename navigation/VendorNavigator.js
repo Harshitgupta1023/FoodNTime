@@ -1,5 +1,5 @@
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 
 import Colors from "../constants/colors";
@@ -41,7 +41,7 @@ const VendorNavigator = () => {
         component={VendorAccount}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
-            return <Ionicons size={23} color={color} name="ios-restaurant" />;
+            return <FontAwesome size={23} color={color} name="user" />;
           },
           tabBarColor: Colors.accentColor,
         }}

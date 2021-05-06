@@ -1,5 +1,5 @@
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
@@ -47,7 +47,7 @@ const UserTab = () => {
         component={Profile}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
-            return <Ionicons size={23} color={color} name="ios-restaurant" />;
+            return <FontAwesome size={23} color={color} name="user" />;
           },
           tabBarColor: Colors.accentColor,
         }}

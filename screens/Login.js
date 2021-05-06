@@ -7,7 +7,6 @@ import { ActivityIndicator, Colors } from "react-native-paper";
 import firebase from "firebase";
 import * as Google from "expo-google-app-auth";
 import Firebase from "../config/Firebase";
-// import * as ImagePicker from "expo-image-picker";
 
 const LoginScreen = (props) => {
   const [email, setEmail] = useState("");
