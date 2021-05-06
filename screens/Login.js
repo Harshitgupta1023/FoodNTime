@@ -1,10 +1,10 @@
 import React, { Fragment, useState } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { ActivityIndicator, Colors } from "react-native-paper";
 import { Formik } from "formik";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 
 import firebase from "firebase";
 import * as Google from "expo-google-app-auth";
@@ -117,6 +117,11 @@ const LoginScreen = (props) => {
     }
     setIsLoading(false);
   };
+
+  const onForgotPassword = () => {
+    props.navigation.navigate("Forgot Password");
+  };
+
   return (
     <View style={styles.screen}>
       <Formik
@@ -158,19 +163,25 @@ const LoginScreen = (props) => {
                 errorMessage={touched.password && errors.password}
               />
             </View>
-            <ActivityIndicator
-              animating={isLoading}
-              size="large"
-              color={Colors.red800}
-            />
             <View style={styles.button}>
               <Button
                 raised={true}
                 title="Log In"
                 onPress={handleSubmit}
-                buttonStyle={{ width: 100 }}
+                buttonStyle={{ width: 140 }}
+              />
+              <Button
+                raised={true}
+                title="Forgot Password"
+                onPress={onForgotPassword}
+                buttonStyle={{ width: 140 }}
               />
             </View>
+            <ActivityIndicator
+              animating={isLoading}
+              size="large"
+              color={Colors.red800}
+            />
           </Fragment>
         )}
       </Formik>
@@ -181,13 +192,12 @@ const LoginScreen = (props) => {
           title="     SignIn with Google"
           onPress={onGoogleLogin}
           buttonStyle={{
-            width: 200,
+            width: 300,
             backgroundColor: "red",
             borderRadius: 30,
           }}
         />
       </View>
-      <FlashMessage position="bottom" />
     </View>
   );
 };
@@ -202,7 +212,10 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   button: {
-    marginVertical: 10,
+    width: 330,
+    marginTop: 30,
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
 });
 export default LoginScreen;

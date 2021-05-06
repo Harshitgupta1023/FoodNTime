@@ -2,7 +2,7 @@ import React, { useState, Fragment } from "react";
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Input, Button, CheckBox } from "react-native-elements";
 import { Formik } from "formik";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 
 import Firebase from "../config/Firebase";
 import { ActivityIndicator, Colors } from "react-native-paper";
@@ -205,7 +205,6 @@ const SignUpScreen = (props) => {
           size="large"
           color={Colors.red800}
         />
-        <FlashMessage position="bottom" />
       </ScrollView>
     </View>
   );

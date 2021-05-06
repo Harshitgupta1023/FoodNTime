@@ -11,6 +11,7 @@ import UserNavigator from "./UserNavigator";
 import { Text } from "react-native";
 import VendorNavigator from "./VendorNavigator";
 import AddMeal from "../screens/AddMeal";
+import ForgotPassword from "../screens/ForgotPassword";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -52,6 +53,7 @@ const AuthNavigator = () => {
     <Stack.Navigator>
       <Stack.Screen name="StartUp" component={StartUpScreen} />
       <Stack.Screen name="Authentication" component={MainNavigator} />
+      <Stack.Screen name="Forgot Password" component={ForgotPassword} />
       <Stack.Screen
         name="Food N Time"
         component={UserNavigator}
