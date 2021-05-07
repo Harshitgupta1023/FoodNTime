@@ -94,7 +94,6 @@ const SignUpScreen = (props) => {
             confirmPassword: "",
           }}
           onSubmit={(values) => {
-            console.log("triggered");
             setStoreName(values.storeName);
             setStoreAddress(values.storeAddress);
             setFullName(values.name);
