@@ -10,6 +10,7 @@ import firebase from "firebase";
 import * as Google from "expo-google-app-auth";
 import Firebase from "../config/Firebase";
 import LoginValidator from "../validator/LoginValidator";
+import { ScrollView } from "react-native";
 
 const LoginScreen = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -124,80 +125,82 @@ const LoginScreen = (props) => {
 
   return (
     <View style={styles.screen}>
-      <Formik
-        initialValues={{ email: "", password: "" }}
-        onSubmit={(values) => {
-          onLogIn(values.email, values.password);
-        }}
-        validationSchema={LoginValidator}
-      >
-        {({
-          values,
-          errors,
-          handleChange,
-          touched,
-          handleBlur,
-          handleSubmit,
-        }) => (
-          <Fragment>
-            <View style={styles.inputcontainer}>
-              <Input
-                placeholder="email@address.com"
-                onChangeText={handleChange("email")}
-                label="Email Address"
-                leftIcon={{ type: "materials-icons", name: "mail" }}
-                value={values.email}
-                onBlur={handleBlur("email")}
-                errorStyle={{ color: "red" }}
-                errorMessage={touched.email && errors.email}
-              />
-              <Input
-                placeholder=" Password"
-                secureTextEntry={true}
-                onChangeText={handleChange("password")}
-                label="Password"
-                leftIcon={{ type: "font-awesome", name: "lock" }}
-                value={values.password}
-                onBlur={handleBlur("password")}
-                errorStyle={{ color: "red" }}
-                errorMessage={touched.password && errors.password}
-              />
-            </View>
-            <View style={styles.button}>
-              <Button
-                raised={true}
-                title="Log In"
-                onPress={handleSubmit}
-                buttonStyle={{ width: 140 }}
-              />
-              <Button
-                raised={true}
-                title="Forgot Password"
-                onPress={onForgotPassword}
-                buttonStyle={{ width: 140 }}
-              />
-            </View>
-            <ActivityIndicator
-              animating={isLoading}
-              size="large"
-              color={Colors.red800}
-            />
-          </Fragment>
-        )}
-      </Formik>
-      <View style={styles.button}>
-        <Button
-          icon={<Icon name="google" size={25} color="white" />}
-          raised={true}
-          title="     SignIn with Google"
-          onPress={onGoogleLogin}
-          buttonStyle={{
-            width: 300,
-            backgroundColor: "red",
-            borderRadius: 30,
+      <ScrollView style={styles.scroll}>
+        <Formik
+          initialValues={{ email: "", password: "" }}
+          onSubmit={(values) => {
+            onLogIn(values.email, values.password);
           }}
-        />
-      </View>
+          validationSchema={LoginValidator}
+        >
+          {({
+            values,
+            errors,
+            handleChange,
+            touched,
+            handleBlur,
+            handleSubmit,
+          }) => (
+            <Fragment>
+              <View style={styles.inputcontainer}>
+                <Input
+                  placeholder="email@address.com"
+                  onChangeText={handleChange("email")}
+                  label="Email Address"
+                  leftIcon={{ type: "materials-icons", name: "mail" }}
+                  value={values.email}
+                  onBlur={handleBlur("email")}
+                  errorStyle={{ color: "red" }}
+                  errorMessage={touched.email && errors.email}
+                />
+                <Input
+                  placeholder=" Password"
+                  secureTextEntry={true}
+                  onChangeText={handleChange("password")}
+                  label="Password"
+                  leftIcon={{ type: "font-awesome", name: "lock" }}
+                  value={values.password}
+                  onBlur={handleBlur("password")}
+                  errorStyle={{ color: "red" }}
+                  errorMessage={touched.password && errors.password}
+                />
+              </View>
+              <View style={styles.button}>
+                <Button
+                  raised={true}
+                  title="Log In"
+                  onPress={handleSubmit}
+                  buttonStyle={{ width: 140 }}
+                />
+                <Button
+                  raised={true}
+                  title="Forgot Password"
+                  onPress={onForgotPassword}
+                  buttonStyle={{ width: 140 }}
+                />
+              </View>
+              <ActivityIndicator
+                animating={isLoading}
+                size="large"
+                color={Colors.red800}
+              />
+            </Fragment>
+          )}
+        </Formik>
+        <View style={styles.button}>
+          <Button
+            icon={<Icon name="google" size={25} color="white" />}
+            raised={true}
+            title="     SignIn with Google"
+            onPress={onGoogleLogin}
+            buttonStyle={{
+              width: 300,
+              backgroundColor: "red",
+              borderRadius: 30,
+            }}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 };
@@ -211,6 +214,7 @@ const styles = StyleSheet.create({
   inputcontainer: {
     width: "80%",
   },
+  scroll: { flex: 1, paddingTop: 70 },
   button: {
     width: 330,
     marginTop: 30,
