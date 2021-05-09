@@ -1,9 +1,16 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 const MealDetails = (props) => {
+  const { meals } = props.route.params;
+  const { name, discount, price, imageURL, time } = meals;
+
   return (
     <View style={styles.screen}>
-      <Text>DETAILED MEAL DESCRIPTION</Text>
+      <Text>{name}</Text>
+      <Text>{discount}</Text>
+      <Text>{price}</Text>
+      <Text>{time}</Text>
+      <Image style={{ width: 150, height: 150 }} source={{ uri: imageURL }} />
     </View>
   );
 };
