@@ -1,41 +1,66 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import AppLoading from "expo-app-loading";
+import React, { useState, useEffect } from "react";
+import { Button } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import Firebase from "../config/Firebase";
-
+import AppLoading from "expo-app-loading";
+import RenderImage from "../components/RenderImage";
+import MealsCard from "../components/MealsCard";
 const HomePage = (props) => {
-  var db = Firebase.firestore();
-  const [loading, setLoading] = useState(true);
   const [meals, setMeals] = useState();
+  const [mealsId, setMealsId] = useState();
+  const [imageId, setImageId] = useState();
 
   const fetchMeals = async () => {
-    var out = {};
-    await db
+    var obj = {};
+    var objId = [];
+
+    var i = 0;
+    await Firebase.firestore()
       .collection("meals")
       .get()
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          out[doc.id] = doc.data();
-          // console.log(doc.id, " => ", doc.data());
+      .then(async (querySnapshot) => {
+        querySnapshot.forEach((doc, idx) => {
+          obj[doc.id] = doc.data();
+          objId[i] = doc.id;
+          i += 1;
         });
+        setMeals(obj);
+        setMealsId(objId);
       });
-    setMeals(out);
   };
-  if (loading) {
+
+  useEffect(() => {
+    fetchMeals();
+  }, []);
+
+  if (mealsId === undefined) {
     return (
-      <AppLoading
-        startAsync={fetchMeals}
-        onFinish={() => {
-          setLoading(false);
-        }}
-        onError={console.warn}
-      />
+      <View>
+        <Text>Loading</Text>
+      </View>
     );
   }
+  // if (imageId === undefined) {
+  //   return (
+  //     <View>
+  //       <Text>Loading</Text>
+  //       <RenderImage mealsId={mealsId} meals={meals} setImageId={setImageId} />
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={styles.screen}>
-      <Text>MEALSS</Text>
+      <MealsCard meals={meals} mealsId={mealsId} />
+
+      {/* <Image style={styles.tinyLogo} source={{ uri: imageId[1].ImageUrl }} /> */}
+
+      <Button
+        title="click"
+        onPress={() => {
+          console.log(meals[mealsId[6]]);
+        }}
+      />
     </View>
   );
 };
@@ -45,6 +70,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  tinyLogo: {
+    width: 150,
+    height: 150,
   },
 });
 
