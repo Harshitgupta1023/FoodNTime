@@ -1,65 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { Button } from "react-native";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
-import RenderImage from "../components/RenderImage";
-import MealsCard from "../components/MealsCard";
+
 const HomePage = (props) => {
   const [meals, setMeals] = useState();
   const [mealsId, setMealsId] = useState();
-  const [imageId, setImageId] = useState();
+  const [loading, setLoading] = useState(true);
 
   const fetchMeals = async () => {
+    var storage = Firebase.storage().ref();
+    var db = Firebase.firestore();
     var obj = {};
     var objId = [];
-
-    var i = 0;
-    await Firebase.firestore()
-      .collection("meals")
-      .get()
-      .then(async (querySnapshot) => {
-        querySnapshot.forEach((doc, idx) => {
-          obj[doc.id] = doc.data();
-          objId[i] = doc.id;
-          i += 1;
-        });
-        setMeals(obj);
-        setMealsId(objId);
-      });
+    var dat = await db.collection("meals").get();
+    await Promise.all(
+      dat.docs.map(async (doc) => {
+        objId.push(doc.id);
+        obj[doc.id] = doc.data();
+        try {
+          const newURL = await storage
+            .child(doc.data().imageURL)
+            .getDownloadURL();
+          obj[doc.id].imageURL = newURL;
+        } catch (err) {}
+      })
+    );
+    console.log(obj);
+    setMealsId(objId);
+    setMeals(obj);
   };
 
-  useEffect(() => {
-    fetchMeals();
-  }, []);
-
-  if (mealsId === undefined) {
+  if (loading) {
     return (
-      <View>
-        <Text>Loading</Text>
-      </View>
+      <AppLoading
+        startAsync={fetchMeals}
+        onFinish={() => {
+          setLoading(false);
+        }}
+        onError={console.warn}
+      />
     );
   }
-  // if (imageId === undefined) {
-  //   return (
-  //     <View>
-  //       <Text>Loading</Text>
-  //       <RenderImage mealsId={mealsId} meals={meals} setImageId={setImageId} />
-  //     </View>
-  //   );
-  // }
 
   return (
     <View style={styles.screen}>
-      <MealsCard meals={meals} mealsId={mealsId} />
-
-      {/* <Image style={styles.tinyLogo} source={{ uri: imageId[1].ImageUrl }} /> */}
-
-      <Button
-        title="click"
-        onPress={() => {
-          console.log(meals[mealsId[6]]);
-        }}
+      {/* <MealsCard meals={meals} mealsId={mealsId} /> */}
+      <Text>{meals[mealsId[0]].imageURL}</Text>
+      <Image
+        style={styles.tinyLogo}
+        source={{ uri: meals[mealsId[0]].imageURL }}
       />
     </View>
   );

@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   inputcontainer: {
-    width: "80%",
+    width: "100%",
   },
   scroll: { flex: 1, paddingTop: 70 },
   button: {
