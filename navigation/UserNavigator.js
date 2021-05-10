@@ -12,6 +12,9 @@ import Profile from "../screens/Profile";
 import Cart from "../screens/Cart";
 import HeaderButtonss from "../components/HeaderButtonss";
 import Colors from "../constants/colors";
+
+import MealDetails from "../screens/MealDetails";
+
 const Tab = createMaterialBottomTabNavigator();
 const tabBarOption = {
   activeColor: Colors.primaryColor,
@@ -86,6 +89,7 @@ const UserNavigator = () => {
         })}
       />
       <Stack.Screen name="cart" component={Cart} />
+      <Stack.Screen name="mealDetail" component={MealDetails} />
     </Stack.Navigator>
   );
 };
