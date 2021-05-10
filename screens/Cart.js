@@ -1,9 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 const Cart = (props) => {
+  const { mealId } = props.route.params;
   return (
     <View style={styles.screen}>
       <Text>CART</Text>
+      <Text>{mealId}</Text>
     </View>
   );
 };
