@@ -3,6 +3,9 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 
+import MealsCard from "../components/MealsCard";
+import { ScrollView } from "react-native";
+import { Button } from "react-native";
 const HomePage = (props) => {
   const [meals, setMeals] = useState();
   const [mealsId, setMealsId] = useState();
@@ -26,7 +29,6 @@ const HomePage = (props) => {
         } catch (err) {}
       })
     );
-    console.log(obj);
     setMealsId(objId);
     setMeals(obj);
   };
@@ -45,12 +47,18 @@ const HomePage = (props) => {
 
   return (
     <View style={styles.screen}>
-      {/* <MealsCard meals={meals} mealsId={mealsId} /> */}
-      <Text>{meals[mealsId[0]].imageURL}</Text>
-      <Image
-        style={styles.tinyLogo}
-        source={{ uri: meals[mealsId[0]].imageURL }}
-      />
+      <ScrollView style={{ width: "100%" }}>
+        {mealsId.map((dat) => {
+          return (
+            <MealsCard
+              key={dat}
+              mealId={dat}
+              meals={meals[dat]}
+              navigation={props.navigation}
+            />
+          );
+        })}
+      </ScrollView>
     </View>
   );
 };
@@ -60,10 +68,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-  },
-  tinyLogo: {
-    width: 150,
-    height: 150,
   },
 });
 
