@@ -2,10 +2,10 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { RadioButton } from "react-native-paper";
 const CourseType = (props) => {
-  const { course, setCourse } = props;
+  const { course, setCourse, screenStyle } = props;
 
   return (
-    <View style={styles.screen}>
+    <View style={{ ...styles.screen, ...screenStyle }}>
       <View style={styles.row}>
         <Text style={styles.text}>Starter</Text>
         <RadioButton

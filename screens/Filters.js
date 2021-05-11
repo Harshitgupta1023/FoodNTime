@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, Switch, Platform, Button } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButtonss from "../components/HeaderButtonss";
-
+import CourseType from "../components/CourseType";
 import Colors from "../constants/colors";
 
 const FilterSwitch = (props) => {
   return (
     <View style={styles.filterContainer}>
-      <Text style={{ fontFamily: "roboto-light" }}>{props.label}</Text>
+      <Text style={styles.text}>{props.label}</Text>
       <Switch
         trackColor={{ false: "grey", true: Colors.primaryColor }}
         thumbColor={Platform.OS === "android" ? Colors.primaryColor : ""}
@@ -18,22 +18,25 @@ const FilterSwitch = (props) => {
     </View>
   );
 };
+
 const Filters = (props) => {
-  const [isDessert, setIsDessert] = useState(false);
-  const [isStarter, setIsStarter] = useState(false);
-  const [isMainCourse, setIsMainCourse] = useState(false);
+  const [courseType, setCourseType] = useState();
   const [isNonVeg, setIsNonVeg] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
+
   const saveFilters = useCallback(() => {
     const appliedFilter = {
-      dessert: isDessert,
-      starter: isStarter,
-      mainCOurse: isMainCourse,
+      course:
+        courseType === 1
+          ? "starter"
+          : courseType === 2
+          ? "mainCourse"
+          : "dessert",
       nonVeg: isNonVeg,
       vegetarian: isVegetarian,
     };
     return appliedFilter;
-  }, [isNonVeg, isVegetarian, isDessert, isStarter, isMainCourse]);
+  }, [isNonVeg, isVegetarian, courseType]);
 
   useEffect(() => {
     props.navigation.setOptions({
@@ -58,21 +61,14 @@ const Filters = (props) => {
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Available Filter/ Restrictions </Text>
-      <FilterSwitch
-        label="Dessert"
-        state={isDessert}
-        onChange={(newVal) => setIsDessert(newVal)}
-      />
-      <FilterSwitch
-        label="Starter"
-        state={isStarter}
-        onChange={(newVal) => setIsStarter(newVal)}
-      />
-      <FilterSwitch
-        label="Main-Course"
-        state={isMainCourse}
-        onChange={(newVal) => setIsMainCourse(newVal)}
-      />
+      <View>
+        <Text style={styles.text}>Course</Text>
+        <CourseType
+          course={courseType}
+          setCourse={setCourseType}
+          screenStyle={{ flex: 0 }}
+        />
+      </View>
       <FilterSwitch
         label="Non-Veg"
         state={isNonVeg}
@@ -90,7 +86,12 @@ const Filters = (props) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    alignItems: "center",
+    marginHorizontal: 15,
+  },
+  text: {
+    paddingHorizontal: 10,
+    fontSize: 18,
+    color: "#474747",
   },
   title: {
     fontFamily: "roboto-regular",
