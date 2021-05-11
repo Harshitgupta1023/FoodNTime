@@ -7,7 +7,7 @@ import { Formik } from "formik";
 import { showMessage } from "react-native-flash-message";
 
 import firebase from "firebase";
-import * as Google from "expo-google-app-auth";
+import * as GoogleSignIn from "expo-google-sign-in";
 import Firebase from "../config/Firebase";
 import LoginValidator from "../validator/LoginValidator";
 import { ScrollView } from "react-native";
@@ -53,7 +53,7 @@ const LoginScreen = (props) => {
           if (
             providerData[i].providerId ===
               firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-            providerData[i].uid === googleUser.user.id
+            providerData[i].uid === googleUser.uid
           ) {
             // We don't need to reauth the Firebase connection.
             return true;
@@ -70,7 +70,7 @@ const LoginScreen = (props) => {
         if (!isUserEqual(googleUser, firebaseUser)) {
           // Build Firebase credential with the Google ID token.
           var credential = firebase.auth.GoogleAuthProvider.credential(
-            googleUser.idToken
+            googleUser.auth.idToken
           );
 
           // Sign in with credential from the Google user.
@@ -78,31 +78,31 @@ const LoginScreen = (props) => {
             .auth()
             .signInWithCredential(credential)
             .then((res) => {
+              setIsLoading(false);
               props.navigation.replace("Food N Time");
             })
             .catch((error) => {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              // The email of the user's account used.
-              var email = error.email;
-              // The firebase.auth.AuthCredential type that was used.
-              var credential = error.credential;
-              // ...
+              setIsLoading(false);
+              showMessage({
+                message: "Login Error",
+                description: error.message,
+                type: "danger",
+              });
             });
         } else {
           console.log("User already signed-in Firebase.");
+          setIsLoading(false);
           props.navigation.replace("Food N Time");
         }
       });
     };
     try {
-      const googleUser = await Google.logInAsync({
-        androidClientId: process.env.GOOGLE_CLIENT_ID,
-      });
-      if (googleUser.type === "success") {
-        onSignIn(googleUser);
+      await GoogleSignIn.initAsync({});
+      const { user, type } = await GoogleSignIn.signInAsync();
+      if (type === "success") {
+        onSignIn(user);
       } else {
+        setIsLoading(false);
         showMessage({
           message: "Login Error",
           description: "Some Error Occurred",
@@ -115,8 +115,8 @@ const LoginScreen = (props) => {
         description: err.message,
         type: "danger",
       });
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const onForgotPassword = () => {

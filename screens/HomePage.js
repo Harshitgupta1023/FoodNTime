@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, StyleSheet } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 
 import MealsCard from "../components/MealsCard";
 import { ScrollView } from "react-native";
-import { Button } from "react-native";
+
 const HomePage = (props) => {
   const [meals, setMeals] = useState();
   const [mealsId, setMealsId] = useState();

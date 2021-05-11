@@ -5,7 +5,6 @@ const Cart = (props) => {
   return (
     <View style={styles.screen}>
       <Text>CART</Text>
-      <Text>{mealId}</Text>
     </View>
   );
 };
