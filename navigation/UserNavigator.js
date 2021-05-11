@@ -70,7 +70,7 @@ const UserNavigator = () => {
         options={({ navigation, route }) => ({
           headerTitle:
             getFocusedRouteNameFromRoute(route) === "undefined"
-              ? meals
+              ? Meals
               : getFocusedRouteNameFromRoute(route),
           headerRight: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
