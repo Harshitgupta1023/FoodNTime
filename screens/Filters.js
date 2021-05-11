@@ -1,23 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { View, Text, StyleSheet, Switch, Platform, Button } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import HeaderButtonss from "../components/HeaderButtonss";
 import CourseType from "../components/CourseType";
-import Colors from "../constants/colors";
-
-const FilterSwitch = (props) => {
-  return (
-    <View style={styles.filterContainer}>
-      <Text style={styles.text}>{props.label}</Text>
-      <Switch
-        trackColor={{ false: "grey", true: Colors.primaryColor }}
-        thumbColor={Platform.OS === "android" ? Colors.primaryColor : ""}
-        value={props.state}
-        onValueChange={props.onChange}
-      />
-    </View>
-  );
-};
+import MealCategory from "../components/MealCategory";
 
 const Filters = (props) => {
   const [courseType, setCourseType] = useState();
@@ -69,16 +55,21 @@ const Filters = (props) => {
           screenStyle={{ flex: 0 }}
         />
       </View>
-      <FilterSwitch
-        label="Non-Veg"
-        state={isNonVeg}
-        onChange={(newVal) => setIsNonVeg(newVal)}
-      />
-      <FilterSwitch
-        label="Vegetarian"
-        state={isVegetarian}
-        onChange={(newVal) => setIsVegetarian(newVal)}
-      />
+      <View>
+        <Text style={styles.text}>Category</Text>
+        <MealCategory
+          newStyle={{ paddingVertical: 0, paddingTop: 20 }}
+          veg={isNonVeg}
+          setVeg={setIsNonVeg}
+          word="Non-Vegetarian"
+        />
+        <MealCategory
+          newStyle={{ paddingVertical: 0, paddingTop: 10 }}
+          veg={isVegetarian}
+          setVeg={setIsVegetarian}
+          word="Vegetarian"
+        />
+      </View>
     </View>
   );
 };
@@ -99,13 +90,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     margin: 20,
     textAlign: "center",
-  },
-  filterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "80%",
-    marginVertical: 10,
   },
 });
 export default Filters;
