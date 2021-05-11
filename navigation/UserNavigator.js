@@ -77,7 +77,7 @@ const UserNavigator = () => {
               <Item
                 title="fav"
                 iconName="cart-outline"
-                onPress={() => navigation.navigate("cart")}
+                onPress={() => navigation.navigate("Cart")}
               />
               <Item
                 title="fav"
@@ -88,7 +88,7 @@ const UserNavigator = () => {
           ),
         })}
       />
-      <Stack.Screen name="cart" component={Cart} />
+      <Stack.Screen name="Cart" component={Cart} />
       <Stack.Screen name="mealDetail" component={MealDetails} />
     </Stack.Navigator>
   );
