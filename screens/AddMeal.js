@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState } from "react";
 import { ScrollView, View, Text, StyleSheet } from "react-native";
 import { Input, Button, Image } from "react-native-elements";
 import CourseType from "../components/CourseType";
@@ -7,8 +7,6 @@ import Icon from "react-native-vector-icons/Entypo";
 import * as ImagePicker from "expo-image-picker";
 import Firebase from "../config/Firebase";
 import { ActivityIndicator } from "react-native-paper";
-import { Formik } from "formik";
-import AddMealValidator from "../validator/AddMealValidator";
 
 const makeID = (length) => {
   var result = [];
@@ -25,20 +23,32 @@ const makeID = (length) => {
 
 const AddMeal = (props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [courseType, setCourseType] = useState(
-    Math.floor(Math.random() * 3) + 1
-  );
+  const [courseType, setCourseType] = useState();
+  const [name, setName] = useState("");
   const [isVeg, setIsVeg] = useState(false);
+  const [discount, setDiscount] = useState("");
+  const [price, setPrice] = useState("");
+  const [time, setTime] = useState("");
   const [filePath, setFilePath] = useState("");
 
   var db = Firebase.firestore();
+
+  const discountHandler = (input) => {
+    setDiscount(input.replace(/[^0-9]/g, ""));
+  };
+  const priceHandler = (input) => {
+    setPrice(input.replace(/[^0-9]/g, ""));
+  };
+  const timeHandler = (input) => {
+    setTime(input.replace(/[^0-9]/g, ""));
+  };
 
   const filePicker = async () => {
     let file = await ImagePicker.launchImageLibraryAsync();
     setFilePath(file.uri);
   };
 
-  const addMeal = async (name, price, discount, time, filePath) => {
+  const onSubmit = async () => {
     setIsLoading(true);
     // Create the file metadata
     var storageRef = Firebase.storage().ref();
@@ -56,7 +66,6 @@ const AddMeal = (props) => {
       name: name,
       price: parseInt(price),
       discount: parseInt(discount),
-      time: parseInt(time),
       starter: false,
       dessert: false,
       mainCourse: false,
@@ -94,121 +103,60 @@ const AddMeal = (props) => {
   return (
     <View style={styles.screen}>
       <ScrollView>
-        <Formik
-          initialValues={{
-            name: "",
-            price: "",
-            time: "",
-            discount: "",
-            filePath: "",
-          }}
-          validationSchema={AddMealValidator}
-          onSubmit={(values) => {
-            addMeal(
-              values.name,
-              values.price,
-              values.discount,
-              values.time,
-              values.filePath
-            );
-          }}
-        >
-          {({
-            values,
-            errors,
-            handleChange,
-            touched,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-          }) => (
-            <Fragment>
-              <Input
-                placeholder="Enter meal name"
-                onChangeText={handleChange("name")}
-                value={values.name}
-                label="Meal Name"
-                onBlur={handleBlur("name")}
-                errorStyle={{ color: "red" }}
-                errorMessage={touched.name && errors.name}
-              />
-              <Text style={styles.text}>Course Type</Text>
-              <CourseType course={courseType} setCourse={setCourseType} />
-              <Text style={styles.text}>Category</Text>
-              <MealCategory veg={isVeg} setVeg={setIsVeg} />
-              <Input
-                placeholder="Discount Value in %"
-                label="Dicount"
-                maxLength={2}
-                value={values.discount}
-                keyboardType="number-pad"
-                onChangeText={handleChange("discount")}
-                onBlur={handleBlur("discount")}
-                errorStyle={{ color: "red" }}
-                errorMessage={touched.discount && errors.discount}
-              />
-              <Input
-                placeholder="Price of Meal"
-                label="Price"
-                maxLength={3}
-                value={values.price}
-                keyboardType="number-pad"
-                onChangeText={handleChange("price")}
-                onBlur={handleBlur("price")}
-                errorStyle={{ color: "red" }}
-                errorMessage={touched.price && errors.price}
-              />
-              <Input
-                placeholder="Time"
-                label="Preparation Time"
-                maxLength={3}
-                value={values.time}
-                keyboardType="number-pad"
-                onChangeText={handleChange("time")}
-                onBlur={handleBlur("time")}
-                errorStyle={{ color: "red" }}
-                errorMessage={touched.time && errors.time}
-              />
-              <View style={styles.picker}>
-                <Button
-                  icon={<Icon name="image" size={25} color="white" />}
-                  raised={true}
-                  title="     Choose Image"
-                  onPress={async () => {
-                    await filePicker();
-                    handleBlur("filePath");
-                    setFieldValue("filePath", filePath);
-                  }}
-                />
-              </View>
-              <Text style={{ color: "red", paddingLeft: 90 }}>
-                {filePath === "" && touched.filePath ? errors.filePath : ""}
-              </Text>
-              {filePath !== "" ? (
-                <View style={styles.image}>
-                  <Image
-                    source={{ uri: filePath }}
-                    style={{
-                      width: "100%",
-                      height: 200,
-                      borderRadius: 5,
-                      overflow: "hidden",
-                    }}
-                  />
-                </View>
-              ) : null}
-
-              <View style={styles.submit}>
-                <Button raised={true} title="Add Meal" onPress={handleSubmit} />
-              </View>
-              <ActivityIndicator
-                animating={isLoading}
-                size="large"
-                color="blue"
-              />
-            </Fragment>
-          )}
-        </Formik>
+        <Input
+          placeholder="Enter meal name"
+          onChangeText={(eve) => setName(eve)}
+          value={name}
+          label="Meal Name"
+        />
+        <Text style={styles.text}>Course Type</Text>
+        <CourseType course={courseType} setCourse={setCourseType} />
+        <Text style={styles.text}>Category</Text>
+        <MealCategory veg={isVeg} setVeg={setIsVeg} />
+        <Input
+          placeholder="Discount Value in %"
+          label="Dicount"
+          maxLength={2}
+          value={discount}
+          keyboardType="number-pad"
+          onChangeText={discountHandler}
+        />
+        <Input
+          placeholder="Price of Meal"
+          label="Price"
+          maxLength={3}
+          value={price}
+          keyboardType="number-pad"
+          onChangeText={priceHandler}
+        />
+        <Input
+          placeholder="Time"
+          label="Preparation Time"
+          maxLength={3}
+          value={time}
+          keyboardType="number-pad"
+          onChangeText={timeHandler}
+        />
+        <View style={styles.picker}>
+          <Button
+            icon={<Icon name="image" size={25} color="white" />}
+            raised={true}
+            title="     Choose Image"
+            onPress={filePicker}
+          />
+        </View>
+        {filePath !== "" ? (
+          <View style={styles.image}>
+            <Image
+              source={{ uri: filePath }}
+              style={{ width: "100%", height: 200 }}
+            />
+          </View>
+        ) : null}
+        <ActivityIndicator animating={isLoading} size="large" color="blue" />
+        <View style={styles.submit}>
+          <Button raised={true} title="Add Meal" onPress={onSubmit} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -234,7 +182,7 @@ const styles = StyleSheet.create({
   },
   submit: {
     paddingHorizontal: "30%",
-    paddingVertical: 20,
+    paddingVertical: 10,
   },
 });
 
