@@ -26,7 +26,7 @@ const MealDetails = (props) => {
         <Button
           title="Add to cart"
           onPress={() => {
-            props.navigation.navigate("cart", { mealId: mealId });
+            props.navigation.navigate("Cart", { mealId: mealId });
           }}
         />
       </View>

@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginVertical: 5,
     elevation: 2,
+    borderWidth: 0.1,
   },
   text: {
     fontFamily: "roboto-light",

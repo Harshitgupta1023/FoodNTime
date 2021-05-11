@@ -1,10 +1,9 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-const Cart = (props) => {
-  const { mealId } = props.route.params === undefined ? "" : props.route.params;
+const Filters = (props) => {
   return (
     <View style={styles.screen}>
-      <Text>CART {mealId}</Text>
+      <Text>Filters Screen</Text>
     </View>
   );
 };
@@ -17,4 +16,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Cart;
+export default Filters;

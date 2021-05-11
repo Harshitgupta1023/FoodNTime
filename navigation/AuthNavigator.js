@@ -6,7 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import StartUpScreen from "../screens/GetStarted";
 import LoginScreen from "../screens/Login";
 import SignUpScreen from "../screens/SignUp";
-import UserNavigator from "./UserNavigator";
+import FiltersNavigator from "./FiltersNavigator";
 
 import { Text } from "react-native";
 import VendorNavigator from "./VendorNavigator";
@@ -56,7 +56,7 @@ const AuthNavigator = () => {
       <Stack.Screen name="Forgot Password" component={ForgotPassword} />
       <Stack.Screen
         name="Food N Time"
-        component={UserNavigator}
+        component={FiltersNavigator}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Vendor Dashboard" component={VendorNavigator} />
