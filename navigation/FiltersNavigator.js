@@ -19,7 +19,7 @@ const defaultNavigationOption = {
 
 const StackFilter = createStackNavigator();
 
-function FilterNavigator() {
+const FilterNavigator = () => {
   return (
     <StackFilter.Navigator>
       <StackFilter.Screen
@@ -41,17 +41,17 @@ function FilterNavigator() {
       />
     </StackFilter.Navigator>
   );
-}
+};
 
 const Drawer = createDrawerNavigator();
 
-function FilterDrawerNavigator() {
+const FilterDrawerNavigator = () => {
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Meals" component={UserNavigator} />
       <Drawer.Screen name="Search Filters" component={FilterNavigator} />
     </Drawer.Navigator>
   );
-}
+};
 
 export default FilterDrawerNavigator;

@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  Dimensions,
   TouchableNativeFeedback,
   TouchableOpacity,
   Platform,
