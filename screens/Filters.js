@@ -6,9 +6,7 @@ import CourseType from "../components/CourseType";
 import MealCategory from "../components/MealCategory";
 
 const Filters = (props) => {
-  const [courseType, setCourseType] = useState(
-    Math.floor(Math.random() * 3) + 1
-  );
+  const [courseType, setCourseType] = useState(0);
   const [isNonVeg, setIsNonVeg] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
 
@@ -50,12 +48,13 @@ const Filters = (props) => {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Available Filter/ Restrictions </Text>
+      <Text style={styles.title}>Search Filters</Text>
       <View>
         <Text style={styles.text}>Course</Text>
         <CourseType
           course={courseType}
           setCourse={setCourseType}
+          extra={true}
           screenStyle={{ flex: 0 }}
         />
       </View>

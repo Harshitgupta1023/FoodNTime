@@ -26,7 +26,7 @@ const Cart = (props) => {
   useEffect(() => {
     fetchCartItems();
   }, []);
-  console.log("hey", orderMeal);
+  console.log("hey", cart);
   return (
     <View style={styles.screen}>
       <Text>CART {orderMeal.length} </Text>

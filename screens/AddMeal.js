@@ -133,7 +133,12 @@ const AddMeal = (props) => {
                 errorMessage={touched.name && errors.name}
               />
               <Text style={styles.text}>Course Type</Text>
-              <CourseType course={courseType} setCourse={setCourseType} />
+              <CourseType
+                course={courseType}
+                setCourse={setCourseType}
+                extra={false}
+                screenStyle={{ flex: 0 }}
+              />
               <Text style={styles.text}>Category</Text>
               <MealCategory veg={isVeg} setVeg={setIsVeg} word="Vegetarian" />
               <Input

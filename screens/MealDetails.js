@@ -1,36 +1,47 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Image, Button } from "react-native";
-import { Input } from "react-native-elements";
+import { View, StyleSheet, Image, Button } from "react-native";
+import { showMessage } from "react-native-flash-message";
 import DefaultText from "../components/DefaultText";
 
 import Firebase from "../config/Firebase";
 
-const AddingMeals = async (mealId, amount) => {
-  amount = parseInt(amount);
-  amount < 0 ? (amount = 0) : amount;
-  var user = Firebase.auth().currentUser.uid;
-  var db = await Firebase.firestore().collection("users").doc(user).get();
-  var userData = db.data();
-  var { cart, orders } = userData;
-  if (cart.length === 0) {
-    var meal = { mealID: mealId, quantity: amount };
-    amount === 0 ? null : cart.push(meal);
-  } else {
-    const result = cart.find(({ mealID }) => mealID === mealId);
-    result === undefined
-      ? amount === 0
-        ? null
-        : cart.push({ mealID: mealId, quantity: amount })
-      : cart.map((meal) => {
+const addToCart = async (mealId) => {
+  try {
+    const amount = 1;
+    var user = Firebase.auth().currentUser.uid;
+    var db = await Firebase.firestore().collection("users").doc(user).get();
+    var userData = db.data();
+    var { cart, orders } = userData;
+    if (cart.length === 0) {
+      var meal = { mealID: mealId, quantity: amount };
+      amount === 0 ? null : cart.push(meal);
+    } else {
+      const result = cart.find(({ mealID }) => mealID === mealId);
+      if (result) {
+        cart.map((meal) => {
           meal.mealID === result.mealID
             ? (meal.quantity = meal.quantity + amount)
             : (meal.quantity = meal.quantity);
         });
+      } else {
+        cart.push({ mealID: mealId, quantity: amount });
+      }
+    }
+    await Firebase.firestore().collection("users").doc(user).update({ cart });
+    showMessage({
+      message: "Added to Cart",
+      description: "Proceed to Cart to Checkout",
+      type: "success",
+    });
+  } catch (err) {
+    showMessage({
+      message: "Failed. Please retry",
+      description: err.message,
+      type: "danger",
+    });
   }
-  await Firebase.firestore().collection("users").doc(user).update({ cart });
 };
 const MealDetails = (props) => {
-  const [quantity, setQuantity] = useState("0");
   const { mealId, meals } = props.route.params;
   const { name, discount, price, imageURL, time } = meals;
   useEffect(() => {
@@ -55,14 +66,8 @@ const MealDetails = (props) => {
         <Button
           title="Add to cart"
           onPress={() => {
-            AddingMeals(mealId, quantity);
+            addToCart(mealId);
           }}
-        />
-        <Input
-          placeholder="Quantity"
-          onChangeText={(val) => setQuantity(val)}
-          label="How Much?"
-          value={quantity}
         />
       </View>
     </View>

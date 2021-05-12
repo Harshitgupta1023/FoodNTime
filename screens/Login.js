@@ -18,6 +18,9 @@ const LoginScreen = (props) => {
   const onLogIn = async (email, password) => {
     setIsLoading(true);
     try {
+      await Firebase.auth().setPersistence(
+        firebase.auth.Auth.Persistence.LOCAL
+      );
       await Firebase.auth().signInWithEmailAndPassword(email, password);
       var user = Firebase.auth().currentUser;
       if (user) {
@@ -97,6 +100,9 @@ const LoginScreen = (props) => {
       });
     };
     try {
+      await Firebase.auth().setPersistence(
+        firebase.auth.Auth.Persistence.LOCAL
+      );
       await GoogleSignIn.initAsync({});
       const { user, type } = await GoogleSignIn.signInAsync();
       if (type === "success") {

@@ -23,7 +23,7 @@ function FilterNavigator() {
   return (
     <StackFilter.Navigator>
       <StackFilter.Screen
-        name="Filter"
+        name="Filters Screen"
         component={Filters}
         options={({ navigation, route }) => ({
           headerLeft: () => (
@@ -49,7 +49,7 @@ function FilterDrawerNavigator() {
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Meals" component={UserNavigator} />
-      <Drawer.Screen name="Filter" component={FilterNavigator} />
+      <Drawer.Screen name="Search Filters" component={FilterNavigator} />
     </Drawer.Navigator>
   );
 }

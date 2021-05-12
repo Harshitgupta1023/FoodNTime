@@ -2,10 +2,19 @@ import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import { RadioButton } from "react-native-paper";
 const CourseType = (props) => {
-  const { course, setCourse, screenStyle } = props;
+  const { course, setCourse, screenStyle, extra } = props;
 
   return (
     <View style={{ ...styles.screen, ...screenStyle }}>
+      {extra ? (
+        <View style={styles.row}>
+          <Text style={styles.text}>None</Text>
+          <RadioButton
+            status={course == 0 ? "checked" : "unchecked"}
+            onPress={() => setCourse(0)}
+          />
+        </View>
+      ) : null}
       <View style={styles.row}>
         <Text style={styles.text}>Starter</Text>
         <RadioButton

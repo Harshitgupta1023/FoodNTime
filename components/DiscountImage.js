@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -10,
     left: 0,
-    backgroundColor: "rgba(0,0,0,0.1)",
+    backgroundColor: "rgba(0,0,0,0.01)",
   },
   discountimageText: {
     marginTop: 15,
