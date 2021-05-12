@@ -3,10 +3,10 @@ import { View, StyleSheet, Text } from "react-native";
 import { Checkbox } from "react-native-paper";
 
 const MealCategory = (props) => {
-  const { veg, setVeg } = props;
+  const { veg, setVeg, word, newStyle } = props;
   return (
-    <View style={styles.row}>
-      <Text style={styles.text}>Vegetarian</Text>
+    <View style={{ ...styles.row, ...newStyle }}>
+      <Text style={styles.text}>{word}</Text>
       <Checkbox
         status={veg ? "checked" : "unchecked"}
         onPress={() => setVeg((cur) => !cur)}

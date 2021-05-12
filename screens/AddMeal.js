@@ -135,7 +135,7 @@ const AddMeal = (props) => {
               <Text style={styles.text}>Course Type</Text>
               <CourseType course={courseType} setCourse={setCourseType} />
               <Text style={styles.text}>Category</Text>
-              <MealCategory veg={isVeg} setVeg={setIsVeg} />
+              <MealCategory veg={isVeg} setVeg={setIsVeg} word="Vegetarian" />
               <Input
                 placeholder="Discount Value in %"
                 label="Dicount"

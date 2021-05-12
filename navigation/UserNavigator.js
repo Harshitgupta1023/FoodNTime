@@ -70,8 +70,40 @@ const UserNavigator = () => {
         options={({ navigation, route }) => ({
           headerTitle:
             getFocusedRouteNameFromRoute(route) === "undefined"
-              ? meals
+              ? Meals
               : getFocusedRouteNameFromRoute(route),
+          headerRight: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
+              <Item
+                title="fav"
+                iconName="cart-outline"
+                onPress={() => navigation.navigate("Cart")}
+              />
+              <Item
+                title="fav"
+                iconName="notifications-outline"
+                onPress={() => alert("search")}
+              />
+            </HeaderButtons>
+          ),
+          headerLeft: () => (
+            <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
+              <Item
+                title="Menu"
+                iconName="ios-menu"
+                onPress={() => {
+                  navigation.toggleDrawer();
+                }}
+              />
+            </HeaderButtons>
+          ),
+        })}
+      />
+      <Stack.Screen name="Cart" component={Cart} />
+      <Stack.Screen
+        name="mealDetail"
+        component={MealDetails}
+        options={({ navigation, route }) => ({
           headerRight: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
               <Item
@@ -88,8 +120,6 @@ const UserNavigator = () => {
           ),
         })}
       />
-      <Stack.Screen name="Cart" component={Cart} />
-      <Stack.Screen name="mealDetail" component={MealDetails} />
     </Stack.Navigator>
   );
 };

@@ -9,11 +9,14 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-import discount_tag from "../assets/discount_tag.jpg";
+
+import DiscountImage from "./DiscountImage";
 import { AntDesign } from "@expo/vector-icons";
 import Colors from "../constants/colors";
+
 const MealsCard = ({ meals, navigation, mealId }) => {
   const { name, discount, price, imageURL, time, rating } = meals;
+
   let TouchableCmp = TouchableOpacity;
   if (Platform.OS === "android" && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
@@ -39,30 +42,7 @@ const MealsCard = ({ meals, navigation, mealId }) => {
               >
                 <Text style={styles.titletime}>{time} min</Text>
               </View>
-              {discount !== 0 ? (
-                <ImageBackground
-                  style={{
-                    width: 85,
-                    height: 60,
-                    position: "absolute",
-                    top: -10,
-                    left: 0,
-                    backgroundColor: "rgba(0,0,0,0.1)",
-                  }}
-                  source={discount_tag}
-                >
-                  <Text
-                    style={{
-                      marginTop: 15,
-                      marginLeft: 40,
-                      color: "white",
-                      fontFamily: "roboto-light",
-                    }}
-                  >
-                    {discount}% OFF
-                  </Text>
-                </ImageBackground>
-              ) : null}
+              {discount !== 0 ? <DiscountImage discount={discount} /> : null}
 
               <View
                 style={{
