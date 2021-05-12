@@ -6,7 +6,9 @@ import CourseType from "../components/CourseType";
 import MealCategory from "../components/MealCategory";
 
 const Filters = (props) => {
-  const [courseType, setCourseType] = useState();
+  const [courseType, setCourseType] = useState(
+    Math.floor(Math.random() * 3) + 1
+  );
   const [isNonVeg, setIsNonVeg] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
 
@@ -17,7 +19,9 @@ const Filters = (props) => {
           ? "starter"
           : courseType === 2
           ? "mainCourse"
-          : "dessert",
+          : courseType === 3
+          ? "dessert"
+          : null,
       nonVeg: isNonVeg,
       vegetarian: isVegetarian,
     };

@@ -7,6 +7,7 @@ import Firebase from "../config/Firebase";
 
 const AddingMeals = async (mealId, amount) => {
   amount = parseInt(amount);
+  amount < 0 ? (amount = 0) : amount;
   var user = Firebase.auth().currentUser.uid;
   var db = await Firebase.firestore().collection("users").doc(user).get();
   var userData = db.data();
