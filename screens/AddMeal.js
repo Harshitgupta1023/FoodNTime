@@ -65,6 +65,7 @@ const AddMeal = (props) => {
         vegetarian: false,
         nonVeg: true,
         vendorID: Firebase.auth().currentUser.uid,
+        available: true,
       };
       if (courseType === 1) {
         doc.starter = true;
