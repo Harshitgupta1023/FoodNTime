@@ -3,7 +3,7 @@ import React from "react";
 import FlashMessage from "react-native-flash-message";
 
 import AuthNavigator from "./AuthNavigator";
-import UserNavigator from "./UserNavigator";
+
 const Navigator = () => {
   return (
     <NavigationContainer>

@@ -9,6 +9,7 @@ import Firebase from "../config/Firebase";
 import { ActivityIndicator } from "react-native-paper";
 import { Formik } from "formik";
 import AddMealValidator from "../validator/AddMealValidator";
+import { showMessage } from "react-native-flash-message";
 
 const makeID = (length) => {
   var result = [];
@@ -40,56 +41,64 @@ const AddMeal = (props) => {
 
   const addMeal = async (name, price, discount, time, filePath) => {
     setIsLoading(true);
-    // Create the file metadata
-    var storageRef = Firebase.storage().ref();
-    var metadata = {
-      contentType: "image/jpeg",
-    };
-    const response = await fetch(filePath);
-    const blob = await response.blob();
-    // Upload file and metadata to the object 'images/mountains.jpg'
-    var loc = "meals/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
-    await storageRef.child(loc).put(blob, metadata);
-    // create doc to be inserted
-    var doc = {
-      imageURL: loc,
-      name: name,
-      price: parseInt(price),
-      discount: parseInt(discount),
-      time: parseInt(time),
-      starter: false,
-      dessert: false,
-      mainCourse: false,
-      vegetarian: false,
-      nonVeg: true,
-      vendorID: Firebase.auth().currentUser.uid,
-    };
-    if (courseType === 1) {
-      doc.starter = true;
-    } else if (courseType == 2) {
-      doc.mainCourse = true;
-    } else if (courseType == 3) {
-      doc.dessert = true;
-    }
-    if (isVeg) {
-      doc.vegetarian = true;
-      doc.nonVeg = false;
-    }
-    // Writing the doc to FireStore
-    db.collection("meals")
-      .doc(makeID(16))
-      .set(doc)
-      .then(() => {
-        console.log("Document successfully written!");
-        props.navigation.pop();
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-        setIsLoading(false);
+    try {
+      // Create the file metadata
+      var storageRef = Firebase.storage().ref();
+      var metadata = {
+        contentType: "image/jpeg",
+      };
+      const response = await fetch(filePath);
+      const blob = await response.blob();
+      // Upload file and metadata to the object 'images/mountains.jpg'
+      var loc = "meals/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
+      await storageRef.child(loc).put(blob, metadata);
+      // create doc to be inserted
+      var doc = {
+        imageURL: loc,
+        name: name,
+        price: parseInt(price),
+        discount: parseInt(discount),
+        time: parseInt(time),
+        starter: false,
+        dessert: false,
+        mainCourse: false,
+        vegetarian: false,
+        nonVeg: true,
+        vendorID: Firebase.auth().currentUser.uid,
+      };
+      if (courseType === 1) {
+        doc.starter = true;
+      } else if (courseType == 2) {
+        doc.mainCourse = true;
+      } else if (courseType == 3) {
+        doc.dessert = true;
+      }
+      if (isVeg) {
+        doc.vegetarian = true;
+        doc.nonVeg = false;
+      }
+      // Writing the doc to FireStore
+      db.collection("meals")
+        .doc(makeID(16))
+        .set(doc)
+        .then(() => {
+          console.log("Document successfully written!");
+          props.navigation.replace("Vendor Dashboard");
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error("Error writing document: ", error);
+          setIsLoading(false);
+        });
+      // console.log(await storageRef.child(loc).getDownloadURL());
+      // storageRef.child(loc).delete();
+    } catch (err) {
+      showMessage({
+        message: "Error",
+        description: err.message,
+        type: "danger",
       });
-    // console.log(await storageRef.child(loc).getDownloadURL());
-    // storageRef.child(loc).delete();
+    }
   };
   return (
     <View style={styles.screen}>

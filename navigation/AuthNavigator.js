@@ -59,7 +59,11 @@ const AuthNavigator = () => {
         component={FiltersNavigator}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="Vendor Dashboard" component={VendorNavigator} />
+      <Stack.Screen
+        name="Vendor Dashboard"
+        component={VendorNavigator}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Add Meal" component={AddMeal} />
     </Stack.Navigator>
   );
