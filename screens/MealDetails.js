@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ImageBackground, Dimensions } from "react-native";
 
-import { ListItem, Icon, Avatar, Button } from "react-native-elements";
+import {
+  Text,
+  ListItem,
+  Icon,
+  Avatar,
+  Button,
+  Rating,
+} from "react-native-elements";
 import { showMessage } from "react-native-flash-message";
 
 import Veg from "../assets/veg.png";
@@ -54,6 +61,7 @@ const MealDetails = (props) => {
   const { mealId, meals } = props.route.params;
   const { name, discount, price, imageURL, time, nonVeg, starter, dessert } =
     meals;
+  const rating = meals.rating ? meals.rating[0].rating : 5;
   const courseType = dessert ? "Dessert" : starter ? "Starter" : "Main Course";
   const list = [
     {
@@ -76,7 +84,7 @@ const MealDetails = (props) => {
     },
     {
       name: "",
-      realText: nonVeg ? "Non-Veg" : "VEG",
+      realText: nonVeg ? "Non-Veg" : "Veg",
       avatar: nonVeg ? NonVeg : Veg,
     },
   ];
@@ -89,32 +97,50 @@ const MealDetails = (props) => {
         {discount === 0 ? null : <DiscountImage discount={discount} />}
         <VegImage nonVeg={nonVeg} width={screenWidth} height={screenHeight} />
       </ImageBackground>
-      <View style={{ marginTop: 10, marginLeft: 10, width: "95%" }}>
+      <View style={styles.listContainer}>
         {list.map((l, i) => (
           <ListItem key={i} bottomDivider>
             {l.icon ? (
-              <Icon name={l.icon} type={l.type ? l.type : null} />
+              <Icon
+                name={l.icon}
+                type={l.type ? l.type : null}
+                style={{ marginLeft: 20 }}
+              />
             ) : null}
 
-            {l.avatar ? <Avatar source={l.avatar} /> : null}
+            {l.avatar ? (
+              <Avatar source={l.avatar} containerStyle={{ marginLeft: 19 }} />
+            ) : null}
 
-            <ListItem.Content>
+            <ListItem.Content style={{ marginLeft: 20 }}>
               {l.name === "" ? null : (
-                <ListItem.Subtitle>{l.name}</ListItem.Subtitle>
+                <ListItem.Subtitle style={{ fontFamily: "roboto-light" }}>
+                  {l.name}
+                </ListItem.Subtitle>
               )}
-              <ListItem.Title>{l.realText}</ListItem.Title>
+              <ListItem.Title style={{ fontFamily: "roboto-regular" }}>
+                {l.realText}
+              </ListItem.Title>
             </ListItem.Content>
           </ListItem>
         ))}
       </View>
-      <View
-        style={{
-          marginTop: 15,
-          width: "100%",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
+
+      <View style={styles.ratingContainer}>
+        <ListItem>
+          <Rating
+            type="star"
+            count={2}
+            ratingCount={5}
+            imageSize={24}
+            showRating
+            ratingTextColor="rgb(0, 0, 0)"
+            startingValue={rating}
+            style={{ height: 10 }}
+          />
+        </ListItem>
+      </View>
+      <View style={styles.buttonContainer}>
         <Button
           icon={<Icon name="shopping-cart" color="white" />}
           title="   Add to cart"
@@ -133,6 +159,25 @@ const styles = StyleSheet.create({
   mainImage: {
     width: screenWidth,
     height: screenHeight / 5,
+  },
+  listContainer: {
+    marginTop: 10,
+    marginLeft: 10,
+    width: "95%",
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    marginHorizontal: 10,
+    backgroundColor: "white",
+    width: "95%",
+    height: 80,
+    justifyContent: "space-around",
+  },
+  buttonContainer: {
+    marginTop: 15,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
