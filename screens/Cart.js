@@ -21,7 +21,6 @@ const Cart = (props) => {
   }, [isDelete]);
   const fetchCartItems = async () => {
     var user = Firebase.auth().currentUser.uid;
-    console.log(Firebase.auth().currentUser);
     setUserId(user);
     var storage = Firebase.storage().ref();
     var db = await Firebase.firestore().collection("users").doc(user).get();
