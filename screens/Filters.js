@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { HeaderButtons, Item } from "react-navigation-header-buttons";
-import HeaderButtonss from "../components/HeaderButtonss";
 import CourseType from "../components/CourseType";
 import MealCategory from "../components/MealCategory";
 
@@ -9,7 +7,6 @@ import { useDispatch } from "react-redux";
 import { setFilters } from "../redux/actions/user";
 const Filters = (props) => {
   const [courseType, setCourseType] = useState(0);
-  const [vegType, setVegType] = useState(0);
   const [isNonVeg, setIsNonVeg] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
   const dispatch = useDispatch();

@@ -13,7 +13,6 @@ import { Image } from "react-native";
 
 import greenTick from "../assets/greenTick.png";
 import redTick from "../assets/redTick.png";
-import { set } from "react-native-reanimated";
 const VendorAccount = (props) => {
   const db = firebase.auth().currentUser;
   const user = db.providerData[0];
@@ -188,9 +187,12 @@ const VendorAccount = (props) => {
                       />
                     </View>
                   ) : (
-                    <View style={{ width: "95%" }}>
+                    <View style={{ width: "95%", marginLeft: 10 }}>
                       <ListItem.Title
-                        style={{ fontSize: 17, fontFamily: "roboto-light" }}
+                        style={{
+                          fontSize: 17,
+                          fontFamily: "roboto-light",
+                        }}
                       >
                         {l.name} :
                       </ListItem.Title>
