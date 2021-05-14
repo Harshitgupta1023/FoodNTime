@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Dimensions } from "react-native";
 import { Icon } from "react-native-elements";
 const Counter = (props) => {
   return (
@@ -30,8 +30,8 @@ const Counter = (props) => {
 const styles = StyleSheet.create({
   counter: {
     flexDirection: "row",
-    width: 45,
-    height: 45,
+    width: Dimensions.get("window").width / 4.5,
+    height: Dimensions.get("window").height / 17,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.2)",

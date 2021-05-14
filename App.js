@@ -5,6 +5,15 @@ import Navigator from "./navigation/Navigator";
 import AppLoading from "expo-app-loading";
 import * as Font from "expo-font";
 
+import { createStore, combineReducers } from "redux";
+import mealsReducer from "./redux/reducers/user";
+import { Provider } from "react-redux";
+
+const rootReducer = combineReducers({
+  meals: mealsReducer,
+});
+const store = createStore(rootReducer);
+
 const fetchFonts = () => {
   return Font.loadAsync({
     "roboto-light": require("./assets/fonts/Roboto-Light.ttf"),
@@ -26,7 +35,11 @@ export default function App() {
     );
   }
 
-  return <Navigator />;
+  return (
+    <Provider store={store}>
+      <Navigator />
+    </Provider>
+  );
 }
 
 const styles = StyleSheet.create({
