@@ -2532,6 +2532,11 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/masked-view/-/masked-view-0.1.10.tgz#5dda643e19e587793bc2034dd9bf7398ad43d401"
   integrity sha512-rk4sWFsmtOw8oyx8SD3KSvawwaK7gRBSEIy2TAwURyGt+3TizssXP1r8nx3zY+R7v2vYYHXZ+k2/GULAT/bcaQ==
 
+"@react-native-google-signin/google-signin@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@react-native-google-signin/google-signin/-/google-signin-6.0.0.tgz#115b666221169cbd6aabd6d9a622a7f48205ea2e"
+  integrity sha512-xmrrG2muhwmoPy9AdfP+ceLBZtnrXkZwgN/jR5u3xOHadyerJfvD76w2BSmm7zeoiMB1wwSkZkzFSa9+i1BdKA==
+
 "@react-navigation/core@^5.15.3":
   version "5.15.3"
   resolved "https://registry.yarnpkg.com/@react-navigation/core/-/core-5.15.3.tgz#dce7090bf3ea0d302993d742c706825e495b812e"
@@ -4596,13 +4601,6 @@ expo-font@~9.1.0:
   integrity sha512-owzbbfrQet7mawTGKMXpVCIA9k56MGhtriO41AW4Zo65dd2Ikm4LoymuHKp2ZlHuIFjRnjECKWz7RXgy/C1yAg==
   dependencies:
     fontfaceobserver "^2.1.0"
-
-expo-google-sign-in@~9.1.0:
-  version "9.1.0"
-  resolved "https://registry.yarnpkg.com/expo-google-sign-in/-/expo-google-sign-in-9.1.0.tgz#9d52c8eaf8ab78bd3c579dea5c730b33026b22f8"
-  integrity sha512-IxbTU3R6bfgiIhiFIP2n52iRNtv7IE22pZVQCVVo3xMTMj5kmafh25daPYOEqkBB3G2AQofY8hCxD4gCLW7GnQ==
-  dependencies:
-    invariant "^2.2.4"
 
 expo-image-loader@~2.1.1:
   version "2.1.1"
