@@ -7,6 +7,7 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
 import Orders from "../screens/Orders";
+import OrderDetails from "../screens/OrderDetails";
 import HomePage from "../screens/HomePage";
 import Profile from "../screens/Profile";
 import Cart from "../screens/Cart";
@@ -16,6 +17,23 @@ import Colors from "../constants/colors";
 import MealDetails from "../screens/MealDetails";
 import PasswordProfile from "../screens/PasswordProfile";
 
+const OrderStack = createStackNavigator();
+const OrderNavigator = () => {
+  return (
+    <OrderStack.Navigator>
+      <OrderStack.Screen
+        name="order"
+        component={Orders}
+        options={{ headerShown: false }}
+      />
+      <OrderStack.Screen
+        name="orderDetails"
+        component={OrderDetails}
+        options={{ headerShown: false }}
+      />
+    </OrderStack.Navigator>
+  );
+};
 const ProfileStack = createStackNavigator();
 const ProfileNavigator = () => {
   return (
@@ -56,7 +74,7 @@ const UserTab = () => {
       />
       <Tab.Screen
         name="order"
-        component={Orders}
+        component={OrderNavigator}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
             return <Ionicons size={23} color={color} name="ios-restaurant" />;
