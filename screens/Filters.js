@@ -5,42 +5,26 @@ import HeaderButtonss from "../components/HeaderButtonss";
 import CourseType from "../components/CourseType";
 import MealCategory from "../components/MealCategory";
 
+import { useDispatch } from "react-redux";
+import { setFilters } from "../redux/actions/user";
 const Filters = (props) => {
   const [courseType, setCourseType] = useState(0);
+  const [vegType, setVegType] = useState(0);
   const [isNonVeg, setIsNonVeg] = useState(false);
   const [isVegetarian, setIsVegetarian] = useState(false);
-
+  const dispatch = useDispatch();
   const saveFilters = useCallback(() => {
     const appliedFilter = {
-      course:
-        courseType === 1
-          ? "starter"
-          : courseType === 2
-          ? "mainCourse"
-          : courseType === 3
-          ? "dessert"
-          : null,
+      none: courseType === 0,
+      starter: courseType === 1,
+      mainCourse: courseType === 2,
+      dessert: courseType === 3,
       nonVeg: isNonVeg,
       vegetarian: isVegetarian,
     };
+    dispatch(setFilters(appliedFilter));
     return appliedFilter;
-  }, [isNonVeg, isVegetarian, courseType]);
-
-  useEffect(() => {
-    props.navigation.setOptions({
-      headerRight: () => (
-        <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
-          <Item
-            title="Save"
-            iconName="save"
-            onPress={() => {
-              console.log(props.route.params);
-            }}
-          />
-        </HeaderButtons>
-      ),
-    });
-  });
+  }, [isNonVeg, isVegetarian, courseType, dispatch]);
 
   useEffect(() => {
     props.navigation.setParams({ save: saveFilters() });
