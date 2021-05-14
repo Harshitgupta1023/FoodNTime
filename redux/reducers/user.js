@@ -20,7 +20,6 @@ const mealReducer = (state = intialState, action) => {
     case SET_FILTERS:
       const appliedFilters = action.filters;
       const updatedFilteredMealsID = [];
-      console.log(appliedFilters);
       const updatedFilteredMeals = state.meals.filter((meal) => {
         if (appliedFilters.none) {
           if (appliedFilters.nonVeg && !meal.nonVeg) {

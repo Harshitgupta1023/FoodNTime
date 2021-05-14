@@ -9,6 +9,25 @@ import VendorDashBoard from "../screens/VendorDashBoard";
 import VendorOrders from "../screens/VendorOrders";
 import VendorAccount from "../screens/VendorAccount";
 import UpdateMeal from "../screens/UpdateMeal";
+import PasswordProfile from "../screens/PasswordProfile";
+
+const ProfileStack = createStackNavigator();
+const ProfileNavigator = () => {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen
+        options={{ headerShown: false }}
+        name="Profile"
+        component={VendorAccount}
+      />
+      <ProfileStack.Screen
+        options={{ headerShown: false }}
+        name="Passwordprofile"
+        component={PasswordProfile}
+      />
+    </ProfileStack.Navigator>
+  );
+};
 
 const Tab = createMaterialBottomTabNavigator();
 const tabBarOption = {
@@ -63,7 +82,7 @@ const VendorTab = () => {
       />
       <Tab.Screen
         name="Account"
-        component={VendorAccount}
+        component={ProfileNavigator}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
             return <FontAwesome size={23} color={color} name="user" />;

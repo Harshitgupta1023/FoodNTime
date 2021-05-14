@@ -14,6 +14,25 @@ import HeaderButtonss from "../components/HeaderButtonss";
 import Colors from "../constants/colors";
 
 import MealDetails from "../screens/MealDetails";
+import PasswordProfile from "../screens/PasswordProfile";
+
+const ProfileStack = createStackNavigator();
+const ProfileNavigator = () => {
+  return (
+    <ProfileStack.Navigator>
+      <ProfileStack.Screen
+        options={{ headerShown: false }}
+        name="Profile"
+        component={Profile}
+      />
+      <ProfileStack.Screen
+        options={{ headerShown: false }}
+        name="Passwordprofile"
+        component={PasswordProfile}
+      />
+    </ProfileStack.Navigator>
+  );
+};
 
 const Tab = createMaterialBottomTabNavigator();
 const tabBarOption = {
@@ -47,7 +66,7 @@ const UserTab = () => {
       />
       <Tab.Screen
         name="account"
-        component={Profile}
+        component={ProfileNavigator}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
             return <FontAwesome size={23} color={color} name="user" />;
