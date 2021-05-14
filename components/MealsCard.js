@@ -10,48 +10,70 @@ import {
 } from "react-native";
 
 import DiscountImage from "./DiscountImage";
+import SoldOutImage from "./SoldOutImage";
+
 import { AntDesign } from "@expo/vector-icons";
 import Colors from "../constants/colors";
+import { showMessage } from "react-native-flash-message";
 
 const MealsCard = ({ meals, navigation, mealId }) => {
   // console.log(meals);
-  const { name, discount, price, imageURL, time, rating } = meals;
-
+  const { name, discount, price, imageURL, time, rating, available } = meals;
   let TouchableCmp = TouchableOpacity;
   if (Platform.OS === "android" && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }
+  const canOrder = () => {
+    navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
+  };
   return (
     <View style={styles.container}>
       <TouchableCmp
-        onPress={() => {
-          navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
-        }}
+        onPress={
+          available
+            ? canOrder
+            : () => {
+                showMessage({
+                  message: "Sorry!!! SOLD OUT",
+                  description: "Item Already Sold...",
+                  type: "danger",
+                });
+              }
+        }
       >
         <View style={styles.mealItem}>
-          <View style={{ ...styles.mealRow, ...styles.mealHeader }}>
+          <View
+            style={{
+              ...styles.mealRow,
+              ...styles.mealHeader,
+            }}
+          >
             <ImageBackground source={{ uri: imageURL }} style={styles.bgImage}>
-              <View
-                style={{
-                  width: "80%",
-                  justifyContent: "flex-end",
-                  alignItems: "flex-end",
-                  marginLeft: 60,
-                  marginBottom: 110,
-                }}
-              >
-                <Text style={styles.titletime}>{time} min</Text>
-              </View>
-              {discount !== 0 ? <DiscountImage discount={discount} /> : null}
+              <View style={available ? null : styles.sold}>
+                <View
+                  style={{
+                    width: "80%",
+                    justifyContent: "flex-end",
+                    alignItems: "flex-end",
+                    marginLeft: 60,
+                    marginBottom: 110,
+                    marginTop: 3,
+                  }}
+                >
+                  <Text style={styles.titletime}>{time} min</Text>
+                </View>
+                {discount !== 0 ? <DiscountImage discount={discount} /> : null}
 
-              <View
-                style={{
-                  ...styles.titleContainer,
-                }}
-              >
-                <Text style={styles.title} numberOfLines={2}>
-                  {name}
-                </Text>
+                {available ? null : <SoldOutImage />}
+                <View
+                  style={{
+                    ...styles.titleContainer,
+                  }}
+                >
+                  <Text style={styles.title} numberOfLines={2}>
+                    {name}
+                  </Text>
+                </View>
               </View>
             </ImageBackground>
           </View>
@@ -89,7 +111,7 @@ const styles = StyleSheet.create({
   mealItem: {
     height: 200,
     width: "100%",
-    backgroundColor: "rgba(0,70,105,0.2)",
+    backgroundColor: "rgba(0,0,105,0.2)",
     borderRadius: 10,
     overflow: "hidden",
   },
@@ -97,6 +119,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     justifyContent: "flex-end",
+  },
+  sold: {
+    backgroundColor: "rgba(255,255,255,0.5)",
+    width: "100%",
+    height: "100%",
   },
   titleContainer: {
     backgroundColor: "rgba(0,0,0,0.5)",
