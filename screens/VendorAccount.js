@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ImageBackground } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
@@ -13,10 +13,12 @@ import { Image } from "react-native";
 
 import greenTick from "../assets/greenTick.png";
 import redTick from "../assets/redTick.png";
+import { set } from "react-native-reanimated";
 const VendorAccount = (props) => {
   const db = firebase.auth().currentUser;
   const user = db.providerData[0];
   const [vendorData, setVendorData] = useState();
+  const [check, setCheck] = useState(false);
   var vendor = async () => {
     const dat = await firebase
       .firestore()
@@ -27,7 +29,7 @@ const VendorAccount = (props) => {
   };
   useEffect(() => {
     vendor();
-  }, [address, name, vendor]);
+  }, [address, name, check]);
   const [name, setName] = useState(user.displayName);
   const [address, setAdress] = useState("");
   const [eMail, seteMail] = useState(user.email);
@@ -70,6 +72,7 @@ const VendorAccount = (props) => {
         await db0.updateProfile({
           displayName: name,
         });
+        setCheck(!check);
         showMessage({
           message: "Name Updated",
           description: "Name is changed!!!!",
@@ -94,6 +97,8 @@ const VendorAccount = (props) => {
       await firebase.firestore().collection("vendors").doc(db.uid).update({
         address: address,
       });
+      setCheck(!check);
+
       showMessage({
         message: "Address Updated",
         description: "Address is changed!!!!",
