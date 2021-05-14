@@ -1,9 +1,8 @@
 {
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
     "web": "expo start --web",
     "eject": "expo eject",
     "test": "jest",
@@ -27,7 +26,7 @@
     "formik": "^2.2.6",
     "react": "16.13.1",
     "react-dom": "16.13.1",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-41.0.0.tar.gz",
+    "react-native": "~0.63.4",
     "react-native-elements": "^3.4.1",
     "react-native-flash-message": "^0.1.23",
     "react-native-gesture-handler": "~1.10.2",
@@ -40,7 +39,10 @@
     "react-navigation-header-buttons": "^7.0.1",
     "react-redux": "^7.2.4",
     "redux": "^4.1.0",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "expo-splash-screen": "~0.10.2",
+    "expo-updates": "~0.5.4",
+    "react-native-unimodules": "~0.13.3"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
@@ -55,5 +57,7 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(jest-)?react-native|react-clone-referenced-element|@react-native-community|expo(nent)?|@expo(nent)?/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base)"
     ]
-  }
+  },
+  "name": "foodntime",
+  "version": "1.0.0"
 }
