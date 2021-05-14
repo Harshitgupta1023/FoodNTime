@@ -14,6 +14,7 @@ import { AntDesign } from "@expo/vector-icons";
 import Colors from "../constants/colors";
 
 const MealsCard = ({ meals, navigation, mealId }) => {
+  // console.log(meals);
   const { name, discount, price, imageURL, time, rating } = meals;
 
   let TouchableCmp = TouchableOpacity;
