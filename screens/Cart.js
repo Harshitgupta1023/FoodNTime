@@ -3,10 +3,25 @@ import { View, Text, StyleSheet, Button, Dimensions } from "react-native";
 
 import AppLoading from "expo-app-loading";
 import Firebase from "../config/Firebase";
+import firebase from "firebase";
 
 import CartTile from "../components/CartTile";
+import RazorpayCheckout from "react-native-razorpay";
 import { ScrollView } from "react-native";
 import { showMessage } from "react-native-flash-message";
+
+const makeID = (length) => {
+  var result = [];
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result.push(
+      characters.charAt(Math.floor(Math.random() * charactersLength))
+    );
+  }
+  return result.join("");
+};
 
 const Cart = (props) => {
   const [userId, setUserId] = useState();
@@ -15,6 +30,9 @@ const Cart = (props) => {
   const [isDelete, setIsDelete] = useState(false);
   const [orderMeal, setOrderMeal] = useState();
   const [isItems, setIsItems] = useState(false);
+  const [isPressed, setIsPressed] = useState(false);
+
+  var db = Firebase.firestore();
 
   useEffect(() => {
     fetchCartItems();
@@ -23,17 +41,14 @@ const Cart = (props) => {
     var user = Firebase.auth().currentUser.uid;
     setUserId(user);
     var storage = Firebase.storage().ref();
-    var db = await Firebase.firestore().collection("users").doc(user).get();
-    var userData = db.data();
+    var user = await db.collection("users").doc(user).get();
+    var userData = user.data();
     const { cart, orders } = userData;
     var allMeal = [];
     await Promise.all(
       cart.map(async (meal) => {
         try {
-          var meals = await Firebase.firestore()
-            .collection("meals")
-            .doc(meal.mealID)
-            .get();
+          var meals = await db.collection("meals").doc(meal.mealID).get();
           var meal = meals.data();
           var newURL = await storage.child(meal.imageURL).getDownloadURL();
           meal.imageURL = newURL;
@@ -47,20 +62,24 @@ const Cart = (props) => {
   };
 
   const deleteCartItem = async (mealId) => {
-    var db = Firebase.firestore().collection("users").doc(userId);
+    var user = db.collection("users").doc(userId);
     var obj = falseCartItem.filter((meal) => meal.mealID !== mealId);
     try {
-      await db.update({
+      await user.update({
         cart: obj,
       });
+      showMessage({
+        message: "Item Deleted",
+        // description: "",
+        type: "success",
+      });
     } catch (err) {
-      console.log(err);
+      showMessage({
+        message: "Some Error Occurred",
+        description: err.message,
+        type: "danger",
+      });
     }
-    showMessage({
-      message: "Item Deleted",
-      // description: "",
-      type: "success",
-    });
   };
 
   const handleDelete = (mealID) => {
@@ -76,8 +95,8 @@ const Cart = (props) => {
         : obj.push(meal)
     );
     setFalseCart(obj);
-    var db = Firebase.firestore().collection("users").doc(userId);
-    db.update({
+    var user = db.collection("users").doc(userId);
+    user.update({
       cart: obj,
     });
   };
@@ -102,21 +121,122 @@ const Cart = (props) => {
         : obj.push(meal);
     });
     setFalseCart(obj);
-    var db = Firebase.firestore().collection("users").doc(userId);
-    db.update({
+    var user = db.collection("users").doc(userId);
+    user.update({
       cart: obj,
     });
   };
 
+  const Payment = async (orderID, amt) => {
+    const user = Firebase.auth().currentUser;
+    var options = {
+      description: "Order Payment",
+      currency: "INR",
+      key: process.env.RAZOR_ID,
+      amount: amt.toString(),
+      name: user.displayName,
+      order_id: orderID,
+      prefill: {
+        email: user.email,
+        name: user.displayName,
+      },
+      theme: { color: "#53a20e" },
+      retry: {
+        enabled: true,
+        max_count: 1,
+      },
+      timeout: 300,
+    };
+    const data = await RazorpayCheckout.open(options);
+    return data;
+  };
+
   const finalCheckout = async () => {
-    var db = Firebase.firestore().collection("users").doc(userId);
+    setIsPressed(true);
+    var user = db.collection("users").doc(userId);
     try {
-      await db.update({
+      // throw new Error("Code Break");
+      await user.update({
         cart: falseCartItem,
       });
+      let res = await fetch(
+        `https://afternoon-wildwood-34561.herokuapp.com/initiate?amount=${totalPrice}`
+      );
+      res = await res.json();
+      const payRes = await Payment(res.id, res.amount);
+      var orderedMeals = [];
+      var tmp;
+      for (var i = 0; i < falseCartItem.length; i++) {
+        tmp = {
+          ...falseCartItem[i],
+          status: false,
+          userRating: 0,
+          vendorRating: 0,
+        };
+        orderedMeals.push(tmp);
+      }
+      var newOrder = { meals: orderedMeals };
+      newOrder["status"] = false;
+      newOrder["userID"] = Firebase.auth().currentUser.uid;
+      newOrder["orderTotal"] = totalPrice;
+      newOrder["paymentInfo"] = {
+        method: "RazorPay Gateway",
+        transactionID: payRes.razorpay_payment_id.split("_")[1],
+      };
+
+      const orderID = makeID(16);
+      var usr = await user.get();
+      usr = usr.data();
+      await db.collection("orders").doc(orderID).set(newOrder);
+
+      const userEntry = {
+        orderID: orderID,
+        price: totalPrice,
+        date: firebase.firestore.Timestamp.fromDate(new Date()),
+        status: false,
+      };
+      const vendorSet = new Set();
+      await Promise.all(
+        orderMeal.map(async (meal) => {
+          if (!vendorSet.has(meal.vendorID)) {
+            vendorSet.add(meal.vendorID);
+            var vndr = await db.collection("vendors").doc(meal.vendorID).get();
+            vndr = vndr.data();
+            await db
+              .collection("vendors")
+              .doc(meal.vendorID)
+              .update({ orders: [...vndr.orders, userEntry] });
+          }
+        })
+      );
+      await user.update({
+        cart: [],
+        orders: [...usr.orders, userEntry],
+      });
+      showMessage({
+        message: "Order Placed",
+        description: "Your Order was Successfully placed",
+        type: "success",
+      });
+      setTimeout(() => {
+        showMessage({
+          message: "Order Info",
+          description: "Check Orders Tab for details",
+          type: "success",
+        });
+      }, 2000);
+      setTimeout(() => {
+        props.navigation.pop();
+      }, 4000);
     } catch (err) {
-      console.log(err);
+      setIsPressed(false);
+      showMessage({
+        message: "Order Placement Failed",
+        description: err.message,
+        type: "danger",
+      });
     }
+    // var myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
   };
 
   if (!isItems) {
@@ -202,6 +322,7 @@ const Cart = (props) => {
 
             <Button
               title="Proceed To Checkout"
+              disabled={isPressed}
               onPress={() => finalCheckout()}
             />
           </View>

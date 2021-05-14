@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { ScrollView, View, Text, StyleSheet } from "react-native";
-import { Input, Button, Image } from "react-native-elements";
+import { Input, CheckBox, Button, Image } from "react-native-elements";
 import CourseType from "../components/CourseType";
 import MealCategory from "../components/MealCategory";
 import Icon from "react-native-vector-icons/Entypo";
@@ -27,6 +27,7 @@ const makeID = (length) => {
 const UpdateMeal = (props) => {
   const { mealId, meals } = props.route.params;
   const [isLoading, setIsLoading] = useState(false);
+  const [available, setAvailable] = useState(meals.available);
   const [courseType, setCourseType] = useState(
     meals.dessert ? 3 : meals.mainCourse ? 2 : 1
   );
@@ -58,6 +59,7 @@ const UpdateMeal = (props) => {
         vegetarian: false,
         nonVeg: true,
         vendorID: Firebase.auth().currentUser.uid,
+        available: available,
       };
       if (courseType === 1) {
         doc.starter = true;
@@ -112,6 +114,15 @@ const UpdateMeal = (props) => {
   };
   return (
     <View style={styles.screen}>
+      <CheckBox
+        right={true}
+        iconRight={true}
+        title="Availablity"
+        checked={available}
+        onPress={() => {
+          setAvailable((old) => !old);
+        }}
+      />
       <ScrollView>
         <Formik
           initialValues={{
@@ -223,7 +234,7 @@ const UpdateMeal = (props) => {
               ) : null}
 
               <View style={styles.submit}>
-                <Button raised={true} title="Add Meal" onPress={handleSubmit} />
+                <Button raised={true} title="Update" onPress={handleSubmit} />
               </View>
               <ActivityIndicator
                 animating={isLoading}

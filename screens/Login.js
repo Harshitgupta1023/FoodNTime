@@ -1,13 +1,15 @@
 import React, { Fragment, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button } from "react-native-elements";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { ActivityIndicator, Colors } from "react-native-paper";
 import { Formik } from "formik";
 import { showMessage } from "react-native-flash-message";
 
 import firebase from "firebase";
-import * as GoogleSignIn from "expo-google-sign-in";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from "@react-native-google-signin/google-signin";
 import Firebase from "../config/Firebase";
 import LoginValidator from "../validator/LoginValidator";
 import { ScrollView } from "react-native";
@@ -56,7 +58,7 @@ const LoginScreen = (props) => {
           if (
             providerData[i].providerId ===
               firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-            providerData[i].uid === googleUser.uid
+            providerData[i].uid === googleUser.user.id
           ) {
             // We don't need to reauth the Firebase connection.
             return true;
@@ -67,54 +69,50 @@ const LoginScreen = (props) => {
     };
     const onSignIn = (googleUser) => {
       // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-      var unsubscribe = firebase.auth().onAuthStateChanged((firebaseUser) => {
-        unsubscribe();
-        // Check if we are already signed-in Firebase with the correct user.
-        if (!isUserEqual(googleUser, firebaseUser)) {
-          // Build Firebase credential with the Google ID token.
-          var credential = firebase.auth.GoogleAuthProvider.credential(
-            googleUser.auth.idToken
-          );
+      var unsubscribe = firebase
+        .auth()
+        .onAuthStateChanged(async (firebaseUser) => {
+          unsubscribe();
+          // Check if we are already signed-in Firebase with the correct user.
+          if (!isUserEqual(googleUser, firebaseUser)) {
+            // Build Firebase credential with the Google ID token.
+            var credential = firebase.auth.GoogleAuthProvider.credential(
+              googleUser.idToken
+            );
 
-          // Sign in with credential from the Google user.
-          firebase
-            .auth()
-            .signInWithCredential(credential)
-            .then((res) => {
-              setIsLoading(false);
-              props.navigation.replace("Food N Time");
-            })
-            .catch((error) => {
-              setIsLoading(false);
-              showMessage({
-                message: "Login Error",
-                description: error.message,
-                type: "danger",
-              });
-            });
-        } else {
-          console.log("User already signed-in Firebase.");
-          setIsLoading(false);
-          props.navigation.replace("Food N Time");
-        }
-      });
+            // Sign in with credential from the Google user.
+            await firebase.auth().signInWithCredential(credential);
+            var user = Firebase.auth().currentUser;
+            console.log(user.uid);
+            var db = Firebase.firestore();
+            await db
+              .collection("users")
+              .doc(user.uid)
+              .set({ cart: [], orders: [], rating: 5 });
+
+            console.log("Data Writen successfully");
+            setIsLoading(false);
+            props.navigation.replace("Food N Time");
+          } else {
+            console.log("User already signed-in Firebase.");
+            setIsLoading(false);
+            props.navigation.replace("Food N Time");
+          }
+        });
     };
     try {
       await Firebase.auth().setPersistence(
         firebase.auth.Auth.Persistence.LOCAL
       );
-      await GoogleSignIn.initAsync({});
-      const { user, type } = await GoogleSignIn.signInAsync();
-      if (type === "success") {
-        onSignIn(user);
-      } else {
-        setIsLoading(false);
-        showMessage({
-          message: "Login Error",
-          description: "Some Error Occurred",
-          type: "danger",
-        });
-      }
+      GoogleSignin.configure({
+        offlineAccess: true,
+        webClientId: process.env.GOOGLE_OAUTH_ID_WEB,
+        androidClientId: process.env.GOOGLE_OAUTH_ID_ANDROID,
+        scopes: ["profile", "email"],
+      });
+      await GoogleSignin.hasPlayServices();
+      const googleUser = await GoogleSignin.signIn();
+      onSignIn(googleUser);
     } catch (err) {
       showMessage({
         message: "Login Error",
@@ -194,16 +192,11 @@ const LoginScreen = (props) => {
           )}
         </Formik>
         <View style={styles.button}>
-          <Button
-            icon={<Icon name="google" size={25} color="white" />}
-            raised={true}
-            title="     SignIn with Google"
+          <GoogleSigninButton
+            style={{ width: 192, height: 48 }}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Dark}
             onPress={onGoogleLogin}
-            buttonStyle={{
-              width: 300,
-              backgroundColor: "red",
-              borderRadius: 30,
-            }}
           />
         </View>
       </ScrollView>
