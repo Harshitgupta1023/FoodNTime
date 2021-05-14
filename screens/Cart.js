@@ -5,6 +5,7 @@ import AppLoading from "expo-app-loading";
 import Firebase from "../config/Firebase";
 
 import CartTile from "../components/CartTile";
+import RazorpayCheckout from "react-native-razorpay";
 import { ScrollView } from "react-native";
 import { showMessage } from "react-native-flash-message";
 
@@ -108,15 +109,45 @@ const Cart = (props) => {
     });
   };
 
+  const Payment = async (orderID, amt) => {
+    const user = Firebase.auth().currentUser;
+    var options = {
+      description: "Order Payment",
+      currency: "INR",
+      key: process.env.RAZOR_ID,
+      amount: amt.toString(),
+      name: user.displayName,
+      order_id: orderID,
+      prefill: {
+        email: user.email,
+        name: user.displayName,
+      },
+      theme: { color: "#53a20e" },
+      retry: {
+        enabled: true,
+        max_count: 1,
+      },
+      timeout: 300,
+    };
+    const data = await RazorpayCheckout.open(options);
+    return data;
+  };
+
   const finalCheckout = async () => {
     var db = Firebase.firestore().collection("users").doc(userId);
     try {
       await db.update({
         cart: falseCartItem,
       });
+      let res = await fetch(
+        `https://afternoon-wildwood-34561.herokuapp.com/initiate?amount=${totalPrice}`
+      );
+      res = await res.json();
+      await Payment(res.id, res.amount);
     } catch (err) {
       console.log(err);
     }
+    // var myTimestamp = firebase.firestore.Timestamp.fromDate(new Date());
   };
 
   if (!isItems) {

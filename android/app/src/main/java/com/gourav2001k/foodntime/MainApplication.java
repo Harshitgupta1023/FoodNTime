@@ -3,6 +3,7 @@ package com.gourav2001k.foodntime;
 import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
+import com.razorpay.rn.RazorpayPackage;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
