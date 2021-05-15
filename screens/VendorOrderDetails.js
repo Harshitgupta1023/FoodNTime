@@ -10,7 +10,7 @@ import {
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 import CartTile from "../components/CartTile";
-import greenTick from "../assets/greenTick.png";
+import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 
 const VendorOrderDetails = (props) => {
