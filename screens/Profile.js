@@ -141,7 +141,7 @@ const Profile = (props) => {
                 width: 25,
                 height: 25,
                 left: 172,
-                top: 2,
+                top: 3,
               }}
               source={
                 Firebase.auth().currentUser.emailVerified ? greenTick : redTick
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderTopLeftRadius: 40,
     overflow: "hidden",
-    elevation: 5,
+    elevation: 2,
   },
   listContainer: {
     margin: 10,

@@ -9,23 +9,24 @@ import {
 } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
-import { useSelector } from "react-redux";
 import CartTile from "../components/CartTile";
 import greenTick from "../assets/greenTick.png";
 import yellowTick from "../assets/yellowTick.jpg";
 
-const OrderDetails = (props) => {
+const VendorOrderDetails = (props) => {
   const { orderId, finalStatus, created } = props.route.params;
+  const [finalVendorStatus, setFinalVendorStatus] = useState(finalStatus);
   const [isLoading, setIsLoading] = useState(false);
   const [orderedMeal, setOrderedMeals] = useState();
   const [orderedMealId, setOrderedMealsId] = useState();
-  const meals = useSelector((state) => state.meals.meals);
+  const user = Firebase.auth().currentUser.uid;
+  const [meals, setMeals] = useState([]);
   const finalOrderMeals = [];
   var db = Firebase.firestore();
+  var storage = Firebase.storage().ref();
 
   const fetchItems = async () => {
     var order = await db.collection("orders").doc(orderId).get();
-    // console.log(order.data());
     var orderData = order.data().meals;
     var mealId = [];
     orderData.map((dat) => {
@@ -33,6 +34,22 @@ const OrderDetails = (props) => {
     });
     setOrderedMeals(order.data().meals);
     setOrderedMealsId(mealId);
+    var obj = {};
+    var reduxObj = [];
+    var dat = await db.collection("meals").get();
+    await Promise.all(
+      dat.docs.map(async (doc) => {
+        obj[doc.id] = doc.data();
+        try {
+          const newURL = await storage
+            .child(doc.data().imageURL)
+            .getDownloadURL();
+          obj[doc.id].imageURL = newURL;
+          reduxObj.push({ id: doc.id, ...obj[doc.id] });
+        } catch (err) {}
+      })
+    );
+    setMeals(reduxObj);
   };
 
   if (!isLoading) {
@@ -54,7 +71,7 @@ const OrderDetails = (props) => {
   });
   var Total = 0;
   finalOrderMeals.map((dat) => {
-    Total = Total + dat.quantity * dat.price;
+    dat.vendorID === user ? (Total = Total + dat.quantity * dat.price) : Total;
   });
   return (
     <View style={styles.screen}>
@@ -66,8 +83,9 @@ const OrderDetails = (props) => {
       >
         <ScrollView>
           {finalOrderMeals.map((me, idx) => {
-            return (
+            return me.vendorID === user ? (
               <CartTile
+                noCounter
                 status={me.status}
                 key={idx}
                 imageURL={me.imageURL}
@@ -75,9 +93,12 @@ const OrderDetails = (props) => {
                 price={me.price}
                 quantity={me.quantity}
                 time={me.time}
-                noCounter
+                vendor
+                mealId={me.mealID}
+                orderID={orderId}
+                setFinalVendorStatus={setFinalVendorStatus}
               />
-            );
+            ) : null;
           })}
         </ScrollView>
       </View>
@@ -112,11 +133,11 @@ const OrderDetails = (props) => {
         >
           <Text>Final Status </Text>
           <Image
-            source={finalStatus ? greenTick : yellowTick}
+            source={finalVendorStatus ? greenTick : yellowTick}
             style={{ width: 40, height: 40, margin: 5 }}
           />
           <Text style={{ fontFamily: "roboto-regular", fontWeight: "bold" }}>
-            {finalStatus ? "Completed" : "Processing"}
+            {finalVendorStatus ? "Completed" : "Processing"}
           </Text>
         </View>
       </View>
@@ -163,4 +184,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default OrderDetails;
+export default VendorOrderDetails;
