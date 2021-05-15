@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 import OrderTile from "../components/OrderTile";
+import { Button, Icon } from "react-native-elements";
 
 const Orders = (props) => {
   const [orderItem, setOrderItem] = useState();
@@ -12,6 +13,8 @@ const Orders = (props) => {
   const fetchItems = async () => {
     var order = await db.collection("users").doc(user).get();
     setOrderItem(order.data().orders);
+    console.log("HEY");
+    console.log(props.route.params);
   };
   if (!isLoading) {
     return (
@@ -26,7 +29,34 @@ const Orders = (props) => {
   }
   return (
     <View style={styles.screen}>
-      <Text style={styles.title}>Order</Text>
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row",
+        }}
+      >
+        <View
+          style={{ justifyContent: "center", width: "70%", marginLeft: 20 }}
+        >
+          <Text style={styles.title}>Order</Text>
+        </View>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10,
+            // marginLeft: 80,
+          }}
+        >
+          <Icon
+            raised
+            name="refresh"
+            type="font-awesome"
+            color="blue"
+            onPress={() => setIsLoading(false)}
+          />
+        </View>
+      </View>
       <ScrollView>
         {orderItem.map((me, idx) => {
           return (
