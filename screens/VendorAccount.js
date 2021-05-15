@@ -185,7 +185,7 @@ const VendorAccount = (props) => {
           <View style={styles.imageContainer}>
             <ImageBackground source={{ uri: filePath }} style={styles.image}>
               <Image
-                style={{ width: 40, height: 45, left: 160, top: 1 }}
+                style={{ width: 25, height: 25, left: 172, top: 2 }}
                 source={db.emailVerified ? greenTick : redTick}
               />
             </ImageBackground>
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     marginLeft: 70,
     width: 200,
     height: 200,
-    borderRadius: 40,
+    borderTopLeftRadius: 40,
     overflow: "hidden",
     elevation: 5,
   },
