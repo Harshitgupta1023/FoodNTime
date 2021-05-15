@@ -51,11 +51,15 @@ const Stack = createStackNavigator();
 const AuthNavigator = () => {
   return (
     <Stack.Navigator>
-      <Stack.Screen name="StartUp" component={StartUpScreen} />
+      <Stack.Screen
+        name="Food N Time"
+        component={StartUpScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen name="Authentication" component={MainNavigator} />
       <Stack.Screen name="Forgot Password" component={ForgotPassword} />
       <Stack.Screen
-        name="Food N Time"
+        name="User"
         component={FiltersNavigator}
         options={{ headerShown: false }}
       />
