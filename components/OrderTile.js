@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 
 import Colors from "../constants/colors";
-import greenTick from "../assets/greenTick.png";
+import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 import { Image } from "react-native";
 import { TouchableNativeFeedback } from "react-native";

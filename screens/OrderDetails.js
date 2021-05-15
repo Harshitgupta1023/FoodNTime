@@ -11,7 +11,7 @@ import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 import { useSelector } from "react-redux";
 import CartTile from "../components/CartTile";
-import greenTick from "../assets/greenTick.png";
+import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 
 const OrderDetails = (props) => {

@@ -8,7 +8,7 @@ import { ListItem, Icon, Button, Input, Image } from "react-native-elements";
 
 import Firebase from "../config/Firebase";
 import { ScrollView } from "react-native";
-import greenTick from "../assets/greenTick.png";
+import greenTick from "../assets/greenTick.jpg";
 import redTick from "../assets/redTick.png";
 
 const makeID = (length) => {
