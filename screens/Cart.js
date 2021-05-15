@@ -179,6 +179,7 @@ const Cart = (props) => {
       var newOrder = { meals: orderedMeals };
       newOrder["status"] = false;
       newOrder["userID"] = Firebase.auth().currentUser.uid;
+      newOrder["email"] = Firebase.auth().currentUser.email;
       newOrder["orderTotal"] = totalPrice;
       newOrder["paymentInfo"] = {
         method: "RazorPay Gateway",
@@ -201,33 +202,14 @@ const Cart = (props) => {
         orderMeal.map(async (meal) => {
           if (!vendorSet.has(meal.vendorID)) {
             vendorSet.add(meal.vendorID);
-            try {
-              console.log("Email", meal.email);
-              axios.post(
-                "https://afternoon-wildwood-34561.herokuapp.com/mail/",
-                {
-                  email: meal.email,
-                  subject: "Order Placed",
-                  name: "Store Owner",
-                  vendor: true,
-                  orderID: orderID,
-                  placed: false,
-                }
-              );
-              // fetch(`https://afternoon-wildwood-34561.herokuapp.com/mail`, {
-              //   method: "POST",
-              //   body: {
-              //     email: meal.email,
-              //     subject: "Order Placed",
-              //     name: "Store Owner",
-              //     vendor: true,
-              //     orderID: orderID,
-              //     placed: false,
-              //   },
-              // });
-            } catch (err) {
-              console.log(err);
-            }
+            axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
+              email: meal.email,
+              subject: "Order Placed",
+              name: "Store Owner",
+              vendor: true,
+              orderID: orderID,
+              placed: false,
+            });
 
             var vndr = await db.collection("vendors").doc(meal.vendorID).get();
             vndr = vndr.data();
@@ -250,17 +232,6 @@ const Cart = (props) => {
         orderID: orderID,
         placed: false,
       });
-      // fetch(`https://afternoon-wildwood-34561.herokuapp.com/mail`, {
-      //   method: "POST",
-      //   body: {
-      //     email: Firebase.auth().currentUser.email,
-      //     subject: "Order Placed",
-      //     name: Firebase.auth().currentUser.displayName,
-      //     vendor: false,
-      //     orderID: orderID,
-      //     placed: false,
-      //   },
-      // });
       showMessage({
         message: "Order Placed",
         description: "Your Order was Successfully placed",

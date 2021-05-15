@@ -1,24 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ImageBackground } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import * as ImagePicker from "expo-image-picker";
 
-import { ListItem, Icon, Button, Input } from "react-native-elements";
+import { ListItem, Icon, Button, Input, Image } from "react-native-elements";
 
-import BlankProfile from "../assets/blankProfile.jpg";
-
-import firebase from "../config/Firebase";
+import Firebase from "../config/Firebase";
 import { ScrollView } from "react-native";
+import greenTick from "../assets/greenTick.png";
+import redTick from "../assets/redTick.png";
+
+const makeID = (length) => {
+  var result = [];
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result.push(
+      characters.charAt(Math.floor(Math.random() * charactersLength))
+    );
+  }
+  return result.join("");
+};
 
 const Profile = (props) => {
-  const user = firebase.auth().currentUser.providerData[0];
+  const user = Firebase.auth().currentUser.providerData[0];
 
   const [name, setName] = useState(user.displayName);
   const [eMail, seteMail] = useState(user.email);
+  const [filePath, setFilePath] = useState();
+  useEffect(() => {
+    const func = async () => {
+      var storage = Firebase.storage().ref();
+      setFilePath(
+        user.photoURL
+          ? await storage.child(user.photoURL).getDownloadURL()
+          : await storage.child("images/blankProfile.jpg").getDownloadURL()
+      );
+    };
+    func();
+  }, []);
+
+  const filePicker = async () => {
+    let file = await ImagePicker.launchImageLibraryAsync();
+    setFilePath(file.uri);
+  };
 
   const onSignOut = async () => {
     try {
-      await firebase.auth().signOut();
+      await Firebase.auth().signOut();
       props.navigation.replace("StartUp");
     } catch (err) {
       showMessage({
@@ -28,20 +59,6 @@ const Profile = (props) => {
       });
     }
   };
-  // Create the file metadata
-  // let file = await ImagePicker.launchImageLibraryAsync();
-  // var storageRef = firebase.storage().ref();
-  // var metadata = {
-  //   contentType: "image/jpeg",
-  // };
-  // const response = await fetch(file.uri);
-  // const blob = await response.blob();
-
-  // // Upload file and metadata to the object 'images/mountains.jpg'
-  // var loc = "images/" + Date.now().toString() + ".jpg";
-  // await storageRef.child(loc).put(blob, metadata);
-  // console.log(await storageRef.child(loc).getDownloadURL());
-  // storageRef.child(loc).delete();
   const handleName = async () => {
     if (name.length <= 5) {
       showMessage({
@@ -50,7 +67,7 @@ const Profile = (props) => {
         type: "danger",
       });
     } else {
-      var db = firebase.auth().currentUser;
+      var db = Firebase.auth().currentUser;
       try {
         await db.updateProfile({
           displayName: name,
@@ -71,6 +88,25 @@ const Profile = (props) => {
   };
   const handleEmail = () => {
     console.log(eMail);
+  };
+  const imageChange = async () => {
+    await filePicker();
+    if (!filePath.includes("blank")) {
+      // Create the file metadata
+      var storageRef = Firebase.storage().ref();
+      if (user.photoURL) {
+        storageRef.child(user.photoURL).delete();
+      }
+      var metadata = {
+        contentType: "image/jpeg",
+      };
+      const response = await fetch(filePath);
+      const blob = await response.blob();
+      // Upload file and metadata to the object 'images/mountains.jpg'
+      var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
+      await storageRef.child(loc).put(blob, metadata);
+      Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+    }
   };
   const list = [
     {
@@ -95,7 +131,14 @@ const Profile = (props) => {
     <ScrollView>
       <View style={styles.screen}>
         <View style={styles.imageContainer}>
-          <ImageBackground source={BlankProfile} style={styles.image} />
+          <ImageBackground source={{ uri: filePath }} style={styles.image}>
+            <Image
+              style={{ width: 40, height: 45, left: 160, top: 1 }}
+              source={
+                Firebase.auth().currentUser.emailVerified ? greenTick : redTick
+              }
+            />
+          </ImageBackground>
           <View
             style={{
               top: 145,
@@ -108,9 +151,7 @@ const Profile = (props) => {
               type="ionicon"
               size={26}
               raised
-              onPress={() => {
-                console.log("IMAGE");
-              }}
+              onPress={imageChange}
             />
           </View>
         </View>

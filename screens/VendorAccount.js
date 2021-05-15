@@ -2,25 +2,55 @@ import React, { useState, useEffect, useCallback } from "react";
 import { ImageBackground } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
 import FlashMessage, { showMessage } from "react-native-flash-message";
+import * as ImagePicker from "expo-image-picker";
 
 import { ListItem, Icon, Button, Input } from "react-native-elements";
 
-import BlankProfile from "../assets/blankProfile.jpg";
-
-import firebase from "../config/Firebase";
+import Firebase from "../config/Firebase";
 import { ScrollView } from "react-native";
 import { Image } from "react-native";
 
 import greenTick from "../assets/greenTick.png";
 import redTick from "../assets/redTick.png";
+
+const makeID = (length) => {
+  var result = [];
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result.push(
+      characters.charAt(Math.floor(Math.random() * charactersLength))
+    );
+  }
+  return result.join("");
+};
+
 const VendorAccount = (props) => {
-  const db = firebase.auth().currentUser;
+  const db = Firebase.auth().currentUser;
   const user = db.providerData[0];
   const [vendorData, setVendorData] = useState();
   const [check, setCheck] = useState(false);
+  const [filePath, setFilePath] = useState();
+
+  useEffect(() => {
+    const func = async () => {
+      var storage = Firebase.storage().ref();
+      setFilePath(
+        user.photoURL
+          ? await storage.child(user.photoURL).getDownloadURL()
+          : await storage.child("images/blankProfile.jpg").getDownloadURL()
+      );
+    };
+    func();
+  }, []);
+  const filePicker = async () => {
+    let file = await ImagePicker.launchImageLibraryAsync();
+    setFilePath(file.uri);
+  };
+
   var vendor = async () => {
-    const dat = await firebase
-      .firestore()
+    const dat = await Firebase.firestore()
       .collection("vendors")
       .doc(db.uid)
       .get();
@@ -31,10 +61,10 @@ const VendorAccount = (props) => {
   }, [address, name, check]);
   const [name, setName] = useState(user.displayName);
   const [address, setAdress] = useState("");
-  const [eMail, seteMail] = useState(user.email);
+  const [eMail, setEmail] = useState(user.email);
   const onSignOut = async () => {
     try {
-      await firebase.auth().signOut();
+      await Firebase.auth().signOut();
       props.navigation.replace("StartUp");
     } catch (err) {
       showMessage({
@@ -44,20 +74,25 @@ const VendorAccount = (props) => {
       });
     }
   };
-  // Create the file metadata
-  // let file = await ImagePicker.launchImageLibraryAsync();
-  // var storageRef = firebase.storage().ref();
-  // var metadata = {
-  //   contentType: "image/jpeg",
-  // };
-  // const response = await fetch(file.uri);
-  // const blob = await response.blob();
-
-  // // Upload file and metadata to the object 'images/mountains.jpg'
-  // var loc = "images/" + Date.now().toString() + ".jpg";
-  // await storageRef.child(loc).put(blob, metadata);
-  // console.log(await storageRef.child(loc).getDownloadURL());
-  // storageRef.child(loc).delete();
+  const imageChange = async () => {
+    await filePicker();
+    if (!filePath.includes("blank")) {
+      // Create the file metadata
+      var storageRef = Firebase.storage().ref();
+      if (user.photoURL) {
+        storageRef.child(user.photoURL).delete();
+      }
+      var metadata = {
+        contentType: "image/jpeg",
+      };
+      const response = await fetch(filePath);
+      const blob = await response.blob();
+      // Upload file and metadata to the object 'images/mountains.jpg'
+      var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
+      await storageRef.child(loc).put(blob, metadata);
+      Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+    }
+  };
   const handleName = async () => {
     if (name.length <= 5) {
       showMessage({
@@ -66,7 +101,7 @@ const VendorAccount = (props) => {
         type: "danger",
       });
     } else {
-      var db0 = firebase.auth().currentUser;
+      var db0 = Firebase.auth().currentUser;
       try {
         await db0.updateProfile({
           displayName: name,
@@ -93,7 +128,7 @@ const VendorAccount = (props) => {
 
   const handleAddress = async () => {
     try {
-      await firebase.firestore().collection("vendors").doc(db.uid).update({
+      await Firebase.firestore().collection("vendors").doc(db.uid).update({
         address: address,
       });
       setCheck(!check);
@@ -120,7 +155,7 @@ const VendorAccount = (props) => {
   } else {
     const list = [
       {
-        name: "NAME",
+        name: "New Name",
         realText: user.displayName,
         icon: "person-outline",
         type: "ionicon",
@@ -132,11 +167,11 @@ const VendorAccount = (props) => {
         realText: user.email,
         icon: "mail-open-outline",
         type: "ionicon",
-        changeText: (eve) => seteMail(eve),
+        changeText: (eve) => setEmail(eve),
         function: handleEmail,
       },
       {
-        name: "ADDRESS",
+        name: "New Address",
         realText: vendorData.address,
         icon: "business-outline",
         type: "ionicon",
@@ -148,9 +183,9 @@ const VendorAccount = (props) => {
       <ScrollView>
         <View style={styles.screen}>
           <View style={styles.imageContainer}>
-            <ImageBackground source={BlankProfile} style={styles.image}>
+            <ImageBackground source={{ uri: filePath }} style={styles.image}>
               <Image
-                style={{ width: 40, height: 45, left: 150, top: 10 }}
+                style={{ width: 40, height: 45, left: 160, top: 1 }}
                 source={db.emailVerified ? greenTick : redTick}
               />
             </ImageBackground>
@@ -166,9 +201,7 @@ const VendorAccount = (props) => {
                 type="ionicon"
                 size={26}
                 raised
-                onPress={() => {
-                  console.log("IMAGE");
-                }}
+                onPress={imageChange}
               />
             </View>
           </View>
