@@ -8,7 +8,7 @@ import { ListItem, Icon, Button, Input, Image } from "react-native-elements";
 
 import Firebase from "../config/Firebase";
 import { ScrollView } from "react-native";
-import greenTick from "../assets/greenTick.png";
+import greenTick from "../assets/greenTick.jpg";
 import redTick from "../assets/redTick.png";
 
 const makeID = (length) => {
@@ -40,8 +40,6 @@ const Profile = (props) => {
             : user.photoURL
           : await storage.child("images/blankProfile.jpg").getDownloadURL()
       );
-      console.log(Firebase.auth().currentUser);
-      console.log(filePath);
     };
     func();
   }, []);
@@ -94,22 +92,34 @@ const Profile = (props) => {
     console.log(eMail);
   };
   const imageChange = async () => {
-    await filePicker();
-    if (!filePath.includes("blank")) {
-      // Create the file metadata
-      var storageRef = Firebase.storage().ref();
-      if (user.photoURL) {
-        storageRef.child(user.photoURL).delete();
+    try {
+      await filePicker();
+      if (!filePath.includes("blank")) {
+        // Create the file metadata
+        var storageRef = Firebase.storage().ref();
+        if (user.photoURL) {
+          storageRef.child(user.photoURL).delete();
+        }
+        var metadata = {
+          contentType: "image/jpeg",
+        };
+        const response = await fetch(filePath);
+        const blob = await response.blob();
+        // Upload file and metadata to the object 'images/mountains.jpg'
+        var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
+        await storageRef.child(loc).put(blob, metadata);
+        Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+        showMessage({
+          message: "Image Updated Successfully",
+          type: "success",
+        });
       }
-      var metadata = {
-        contentType: "image/jpeg",
-      };
-      const response = await fetch(filePath);
-      const blob = await response.blob();
-      // Upload file and metadata to the object 'images/mountains.jpg'
-      var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
-      await storageRef.child(loc).put(blob, metadata);
-      Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+    } catch (err) {
+      showMessage({
+        message: "Something Went Wrong",
+        description: "Try Again",
+        type: "danger",
+      });
     }
   };
   const list = [

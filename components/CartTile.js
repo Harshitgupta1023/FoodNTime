@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 import { Icon } from "react-native-elements";
 import Colors from "../constants/colors";
 import Counter from "./Counter";
-import greenTick from "../assets/greenTick.png";
+import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 import { RadioButton } from "react-native-paper";
 import Firebase from "../config/Firebase";
