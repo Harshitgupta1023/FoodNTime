@@ -13,8 +13,6 @@ const Orders = (props) => {
   const fetchItems = async () => {
     var order = await db.collection("users").doc(user).get();
     setOrderItem(order.data().orders);
-    console.log("HEY");
-    console.log(props.route.params);
   };
   if (!isLoading) {
     return (
