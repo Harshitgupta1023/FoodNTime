@@ -116,11 +116,6 @@ const UserNavigator = () => {
                 iconName="cart-outline"
                 onPress={() => navigation.navigate("Cart")}
               />
-              <Item
-                title="fav"
-                iconName="notifications-outline"
-                onPress={() => alert("search")}
-              />
             </HeaderButtons>
           ),
           headerLeft: () => (
@@ -147,11 +142,6 @@ const UserNavigator = () => {
                 title="fav"
                 iconName="cart-outline"
                 onPress={() => navigation.navigate("Cart")}
-              />
-              <Item
-                title="fav"
-                iconName="notifications-outline"
-                onPress={() => alert("search")}
               />
             </HeaderButtons>
           ),
