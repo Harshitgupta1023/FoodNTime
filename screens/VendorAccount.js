@@ -36,11 +36,10 @@ const VendorAccount = (props) => {
   useEffect(() => {
     const func = async () => {
       var storage = Firebase.storage().ref();
-      setFilePath(
-        user.photoURL
-          ? await storage.child(user.photoURL).getDownloadURL()
-          : await storage.child("images/blankProfile.jpg").getDownloadURL()
-      );
+      var newPath = user.photoURL
+        ? await storage.child(user.photoURL).getDownloadURL()
+        : await storage.child("images/blankProfile.jpg").getDownloadURL();
+      setFilePath(newPath);
     };
     func();
   }, []);

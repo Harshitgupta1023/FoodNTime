@@ -82,8 +82,8 @@ const LoginScreen = (props) => {
 
             // Sign in with credential from the Google user.
             await firebase.auth().signInWithCredential(credential);
+            await Firebase.auth().currentUser.updateProfile({ photoURL: null });
             var user = Firebase.auth().currentUser;
-            console.log(user.uid);
             var db = Firebase.firestore();
             await db
               .collection("users")

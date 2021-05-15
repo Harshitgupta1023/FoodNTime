@@ -33,13 +33,10 @@ const Profile = (props) => {
   useEffect(() => {
     const func = async () => {
       var storage = Firebase.storage().ref();
-      setFilePath(
-        user.photoURL
-          ? user.photoURL.includes("firebase")
-            ? await storage.child(user.photoURL).getDownloadURL()
-            : user.photoURL
-          : await storage.child("images/blankProfile.jpg").getDownloadURL()
-      );
+      var newPath = user.photoURL
+        ? await storage.child(user.photoURL).getDownloadURL()
+        : await storage.child("images/blankProfile.jpg").getDownloadURL();
+      setFilePath(newPath);
     };
     func();
   }, []);
@@ -108,7 +105,7 @@ const Profile = (props) => {
         // Upload file and metadata to the object 'images/mountains.jpg'
         var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
         await storageRef.child(loc).put(blob, metadata);
-        Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+        await Firebase.auth().currentUser.updateProfile({ photoURL: loc });
         showMessage({
           message: "Image Updated Successfully",
           type: "success",
