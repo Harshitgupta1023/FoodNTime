@@ -35,9 +35,13 @@ const Profile = (props) => {
       var storage = Firebase.storage().ref();
       setFilePath(
         user.photoURL
-          ? await storage.child(user.photoURL).getDownloadURL()
+          ? user.photoURL.includes("firebase")
+            ? await storage.child(user.photoURL).getDownloadURL()
+            : user.photoURL
           : await storage.child("images/blankProfile.jpg").getDownloadURL()
       );
+      console.log(Firebase.auth().currentUser);
+      console.log(filePath);
     };
     func();
   }, []);
@@ -50,7 +54,7 @@ const Profile = (props) => {
   const onSignOut = async () => {
     try {
       await Firebase.auth().signOut();
-      props.navigation.replace("StartUp");
+      props.navigation.replace("Authentication");
     } catch (err) {
       showMessage({
         message: "Error",
@@ -110,7 +114,7 @@ const Profile = (props) => {
   };
   const list = [
     {
-      name: "NAME",
+      name: "New Name",
       realText: user.displayName,
       icon: "person-outline",
       type: "ionicon",

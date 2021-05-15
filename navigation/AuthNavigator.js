@@ -52,14 +52,14 @@ const AuthNavigator = () => {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="Food N Time"
+        name="OnBoarding"
         component={StartUpScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Authentication" component={MainNavigator} />
       <Stack.Screen name="Forgot Password" component={ForgotPassword} />
       <Stack.Screen
-        name="User"
+        name="Food N Time"
         component={FiltersNavigator}
         options={{ headerShown: false }}
       />
