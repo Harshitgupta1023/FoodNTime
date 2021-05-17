@@ -87,7 +87,8 @@ const VendorAccount = (props) => {
   const imageChange = async () => {
     try {
       await filePicker();
-      if (!filePath.includes("blank")) {
+      console.log(filePath);
+      if (!filePath.includes("token")) {
         // Create the file metadata
         var storageRef = Firebase.storage().ref();
         if (user.photoURL && !user.photoURL.includes("blankProfile")) {
@@ -101,10 +102,16 @@ const VendorAccount = (props) => {
         // Upload file and metadata to the object 'images/mountains.jpg'
         var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
         await storageRef.child(loc).put(blob, metadata);
-        Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+        await user.updateProfile({ photoURL: loc });
         showMessage({
           message: "Image Updated Successfully",
           type: "success",
+        });
+      } else {
+        showMessage({
+          message: "Something Went Wrong",
+          description: "Try Again",
+          type: "danger",
         });
       }
     } catch (err) {

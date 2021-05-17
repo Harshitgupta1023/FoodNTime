@@ -119,6 +119,12 @@ const Profile = (props) => {
           message: "Image Updated Successfully",
           type: "success",
         });
+      } else {
+        showMessage({
+          message: "Something Went Wrong",
+          description: "Try Again",
+          type: "danger",
+        });
       }
     } catch (err) {
       showMessage({
