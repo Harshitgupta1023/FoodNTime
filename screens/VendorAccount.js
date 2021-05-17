@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { ImageBackground } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import * as ImagePicker from "expo-image-picker";
 
 import { ListItem, Icon, Button, Input } from "react-native-elements";
@@ -282,7 +282,6 @@ const VendorAccount = (props) => {
               buttonStyle={{ width: 175 }}
             />
           </View>
-          <FlashMessage position="bottom" />
         </View>
       </ScrollView>
     );

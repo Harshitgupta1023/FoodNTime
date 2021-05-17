@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ImageBackground } from "react-native";
 import { View, Text, StyleSheet } from "react-native";
-import FlashMessage, { showMessage } from "react-native-flash-message";
+import { showMessage } from "react-native-flash-message";
 import * as ImagePicker from "expo-image-picker";
-
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { ListItem, Icon, Button, Input, Image } from "react-native-elements";
 
 import Firebase from "../config/Firebase";
@@ -25,7 +25,7 @@ const makeID = (length) => {
 };
 
 const Profile = (props) => {
-  const user = Firebase.auth().currentUser.providerData[0];
+  const user = Firebase.auth().currentUser;
 
   const [name, setName] = useState(user.displayName);
   const [eMail, seteMail] = useState(user.email);
@@ -48,6 +48,9 @@ const Profile = (props) => {
 
   const onSignOut = async () => {
     try {
+      if (user.providerData[0].providerId.includes("google")) {
+        await GoogleSignin.revokeAccess();
+      }
       await Firebase.auth().signOut();
       props.navigation.replace("Authentication");
     } catch (err) {
@@ -66,7 +69,7 @@ const Profile = (props) => {
         type: "danger",
       });
     } else {
-      var db = Firebase.auth().currentUser;
+      var db = user;
       try {
         await db.updateProfile({
           displayName: name,
@@ -91,7 +94,8 @@ const Profile = (props) => {
   const imageChange = async () => {
     try {
       await filePicker();
-      if (!filePath.includes("blank")) {
+      console.log(filePath);
+      if (!filePath.includes("token")) {
         // Create the file metadata
         var storageRef = Firebase.storage().ref();
         if (user.photoURL) {
@@ -105,7 +109,7 @@ const Profile = (props) => {
         // Upload file and metadata to the object 'images/mountains.jpg'
         var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
         await storageRef.child(loc).put(blob, metadata);
-        await Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+        await user.updateProfile({ photoURL: loc });
         showMessage({
           message: "Image Updated Successfully",
           type: "success",
@@ -150,9 +154,7 @@ const Profile = (props) => {
                 left: 172,
                 top: 3,
               }}
-              source={
-                Firebase.auth().currentUser.emailVerified ? greenTick : redTick
-              }
+              source={user.emailVerified ? greenTick : redTick}
             />
           </ImageBackground>
           <View
@@ -224,17 +226,18 @@ const Profile = (props) => {
             buttonStyle={{ width: 100 }}
           />
         </View>
-        <View style={{ marginBottom: 10 }}>
-          <Button
-            raised={true}
-            title="Update Password"
-            onPress={() => {
-              props.navigation.navigate("Passwordprofile");
-            }}
-            buttonStyle={{ width: 175 }}
-          />
-        </View>
-        <FlashMessage position="bottom" />
+        {!user.providerData[0].providerId.includes("google") ? (
+          <View style={{ marginBottom: 10 }}>
+            <Button
+              raised={true}
+              title="Update Password"
+              onPress={() => {
+                props.navigation.navigate("Passwordprofile");
+              }}
+              buttonStyle={{ width: 175 }}
+            />
+          </View>
+        ) : null}
       </View>
     </ScrollView>
   );
