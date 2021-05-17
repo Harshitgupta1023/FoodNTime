@@ -48,11 +48,18 @@ const Profile = (props) => {
   const onSignOut = async () => {
     try {
       if (user.providerData[0].providerId.includes("google")) {
+        GoogleSignin.configure({
+          offlineAccess: true,
+          webClientId: process.env.GOOGLE_OAUTH_ID_WEB,
+          androidClientId: process.env.GOOGLE_OAUTH_ID_ANDROID,
+          scopes: ["profile", "email"],
+        });
         await GoogleSignin.revokeAccess();
       }
       await Firebase.auth().signOut();
       props.navigation.replace("Authentication");
     } catch (err) {
+      console.log(err);
       showMessage({
         message: "Error",
         description: err.message,

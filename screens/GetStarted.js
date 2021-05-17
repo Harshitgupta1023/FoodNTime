@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { Button } from "react-native-elements";
 
 import Firebase from "../config/Firebase";
+import firebase from "firebase";
 import appLogo from "../assets/appLogo1.png";
 import appName from "../assets/appName.png";
 import colors from "../constants/colors";
@@ -15,11 +16,18 @@ const StartUpScreen = (props) => {
       <Button
         title="LAUNCH"
         onPress={() => {
-          var user = Firebase.auth().currentUser;
-          if (user) {
-            props.navigation.replace("Food N Time");
-          }
-          props.navigation.replace("Authentication");
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              props.navigation.replace("Food N Time");
+            } else {
+              props.navigation.replace("Authentication");
+            }
+          });
+          // var user = Firebase.auth().currentUser;
+          // if (user) {
+          //   props.navigation.replace("Food N Time");
+          // }
+          // props.navigation.replace("Authentication");
         }}
         titleStyle={{ color: colors.accentColor }}
         buttonStyle={{
