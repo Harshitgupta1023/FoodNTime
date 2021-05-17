@@ -15,6 +15,7 @@ import SoldOutImage from "./SoldOutImage";
 import { AntDesign } from "@expo/vector-icons";
 import Colors from "../constants/colors";
 import { showMessage } from "react-native-flash-message";
+import Firebase from "../config/Firebase";
 
 const MealsCard = ({ meals, navigation, mealId }) => {
   // console.log(meals);
@@ -23,24 +24,30 @@ const MealsCard = ({ meals, navigation, mealId }) => {
   if (Platform.OS === "android" && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }
-  const canOrder = () => {
-    navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
+  const Openable = async () => {
+    if (available) {
+      navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
+    } else {
+      var db = Firebase.firestore();
+      var vendor = await db
+        .collection("vendors")
+        .doc(Firebase.auth().currentUser.uid)
+        .get();
+      vendor = vendor.data();
+      if (vendor) {
+        navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
+      } else {
+        showMessage({
+          message: "SOLD OUT!!",
+          description: "Item already sold out",
+          type: "danger",
+        });
+      }
+    }
   };
   return (
     <View style={styles.container}>
-      <TouchableCmp
-        onPress={
-          available
-            ? canOrder
-            : () => {
-                showMessage({
-                  message: "Sorry!!! SOLD OUT",
-                  description: "Item Already Sold...",
-                  type: "danger",
-                });
-              }
-        }
-      >
+      <TouchableCmp onPress={Openable}>
         <View style={styles.mealItem}>
           <View
             style={{
