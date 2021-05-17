@@ -34,7 +34,6 @@ const HomePage = (props) => {
       })
     );
     dispatch(fetchMealsRedux(reduxObj, reduxObjId));
-    console.log("Dispatch");
   };
 
   const meals = useSelector((state) => state.meals.filteredMeals);
