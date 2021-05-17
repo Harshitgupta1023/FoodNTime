@@ -51,55 +51,6 @@ const LoginScreen = (props) => {
   };
   const onGoogleLogin = async () => {
     setIsLoading(true);
-    const isUserEqual = (googleUser, firebaseUser) => {
-      if (firebaseUser) {
-        var providerData = firebaseUser.providerData;
-        for (var i = 0; i < providerData.length; i++) {
-          if (
-            providerData[i].providerId ===
-              firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-            providerData[i].uid === googleUser.user.id
-          ) {
-            // We don't need to reauth the Firebase connection.
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-    const onSignIn = (googleUser) => {
-      // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-      var unsubscribe = firebase
-        .auth()
-        .onAuthStateChanged(async (firebaseUser) => {
-          unsubscribe();
-          // Check if we are already signed-in Firebase with the correct user.
-          if (!isUserEqual(googleUser, firebaseUser)) {
-            // Build Firebase credential with the Google ID token.
-            var credential = firebase.auth.GoogleAuthProvider.credential(
-              googleUser.idToken
-            );
-
-            // Sign in with credential from the Google user.
-            await firebase.auth().signInWithCredential(credential);
-            await Firebase.auth().currentUser.updateProfile({ photoURL: null });
-            var user = Firebase.auth().currentUser;
-            var db = Firebase.firestore();
-            await db
-              .collection("users")
-              .doc(user.uid)
-              .set({ cart: [], orders: [], rating: 5 });
-
-            console.log("Data Writen successfully");
-            setIsLoading(false);
-            props.navigation.replace("Food N Time");
-          } else {
-            console.log("User already signed-in Firebase.");
-            setIsLoading(false);
-            props.navigation.replace("Food N Time");
-          }
-        });
-    };
     try {
       await Firebase.auth().setPersistence(
         firebase.auth.Auth.Persistence.LOCAL
@@ -112,7 +63,28 @@ const LoginScreen = (props) => {
       });
       await GoogleSignin.hasPlayServices();
       const googleUser = await GoogleSignin.signIn();
-      onSignIn(googleUser);
+      var credential = firebase.auth.GoogleAuthProvider.credential(
+        googleUser.idToken
+      );
+
+      // Sign in with credential from the Google user.
+      await firebase.auth().signInWithCredential(credential);
+      var user = Firebase.auth().currentUser;
+      var db = Firebase.firestore();
+      var userDB = await db.collection("users").doc(user.uid).get();
+      userDB = userDB.data();
+      if (!userDB) {
+        await Firebase.auth().currentUser.updateProfile({
+          photoURL: "images/blankProfile.jpg",
+        });
+        await db
+          .collection("users")
+          .doc(user.uid)
+          .set({ cart: [], orders: [], rating: 5 });
+        console.log("Data Writen successfully");
+      }
+      setIsLoading(false);
+      props.navigation.replace("Food N Time");
     } catch (err) {
       showMessage({
         message: "Login Error",
