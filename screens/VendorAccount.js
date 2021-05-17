@@ -58,7 +58,6 @@ const VendorAccount = (props) => {
   const onSignOut = async () => {
     try {
       await Firebase.auth().signOut();
-      props.navigation.replace("Authentication");
     } catch (err) {
       showMessage({
         message: "Error",

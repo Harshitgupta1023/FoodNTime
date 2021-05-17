@@ -57,7 +57,6 @@ const Profile = (props) => {
         await GoogleSignin.revokeAccess();
       }
       await Firebase.auth().signOut();
-      props.navigation.replace("Authentication");
     } catch (err) {
       console.log(err);
       showMessage({
@@ -164,7 +163,6 @@ const Profile = (props) => {
         description: "We are sad to see you Go",
         type: "success",
       });
-      setTimeout(() => props.navigation.replace("Authentication"), 2000);
     } catch (err) {
       showMessage({
         message: "Something Went Wrong",

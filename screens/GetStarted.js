@@ -9,26 +9,35 @@ import appName from "../assets/appName.png";
 import colors from "../constants/colors";
 
 const StartUpScreen = (props) => {
+  const handleAuthState = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        if (user) {
+          db = Firebase.firestore();
+          db.collection("users")
+            .doc(user.uid)
+            .get()
+            .then((doc) => {
+              if (doc.exists) {
+                props.navigation.replace("Food N Time");
+              } else {
+                // doc.data() will be undefined in this case
+                props.navigation.replace("Vendor Dashboard");
+              }
+            });
+        }
+      } else {
+        props.navigation.replace("Authentication");
+      }
+    });
+  };
   return (
     <View style={styles.screen}>
       <ImageBackground source={appName} style={styles.name} />
       <ImageBackground source={appLogo} style={styles.image} />
       <Button
         title="LAUNCH"
-        onPress={() => {
-          firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-              props.navigation.replace("Food N Time");
-            } else {
-              props.navigation.replace("Authentication");
-            }
-          });
-          // var user = Firebase.auth().currentUser;
-          // if (user) {
-          //   props.navigation.replace("Food N Time");
-          // }
-          // props.navigation.replace("Authentication");
-        }}
+        onPress={handleAuthState}
         titleStyle={{ color: colors.accentColor }}
         buttonStyle={{
           width: 150,
