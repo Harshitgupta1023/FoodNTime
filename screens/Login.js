@@ -75,7 +75,7 @@ const LoginScreen = (props) => {
       userDB = userDB.data();
       if (!userDB) {
         await Firebase.auth().currentUser.updateProfile({
-          photoURL: "images/blankProfile.jpg",
+          photoURL: "images/blankProfile.png",
         });
         await db
           .collection("users")

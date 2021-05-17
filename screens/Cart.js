@@ -156,10 +156,14 @@ const Cart = (props) => {
     setIsPressed(true);
     var user = db.collection("users").doc(userId);
     try {
-      // throw new Error("Code Break");
       await user.update({
         cart: falseCartItem,
       });
+      if (!Firebase.auth().currentUser.emailVerified) {
+        throw new Error(
+          "Verify your Email from Profile Tab to continue further. If you have already verified your account please reauthenticate to see the changes"
+        );
+      }
       let res = await fetch(
         `https://afternoon-wildwood-34561.herokuapp.com/initiate?amount=${totalPrice}`
       );
