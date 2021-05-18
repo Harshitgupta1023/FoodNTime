@@ -16,11 +16,14 @@ import { useSelector } from "react-redux";
 import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 const VendorOrderDetails = (props) => {
-  const { orderId, finalStatus, created } = props.route.params;
-
+  const { orderId, created } = props.route.params;
   const [isLoading, setIsLoading] = useState(false);
+
   const [orderedMeal, setOrderedMeals] = useState();
   const [finalOrderStatus, setFinalOrderStatus] = useState();
+
+  const [originalVendorOrders, setOriginalVendorOrders] = useState();
+  const [originalOrder, setOriginalOrder] = useState();
   const meals = useSelector((state) => state.meals.meals);
   const finalOrderMeals = [];
 
@@ -30,12 +33,14 @@ const VendorOrderDetails = (props) => {
   const fetchItems = async () => {
     var order = await db.collection("orders").doc(orderId).get();
     var orderData = order.data();
+    setOriginalOrder(orderData.meals);
 
     var vendors = await db.collection("vendors").doc(user).get();
     var vendorsOrders = vendors.data().orders;
     var renderOrderDetails = vendorsOrders.filter(
       (dat) => dat.orderID === orderId
     );
+    setOriginalVendorOrders(vendorsOrders);
     setFinalOrderStatus(renderOrderDetails[0].status);
     setOrderedMeals(orderData.meals);
   };
@@ -62,17 +67,36 @@ const VendorOrderDetails = (props) => {
     vendorMeals.map((dat) => {
       dat.mealID === md ? (dat.status = newStatus) : dat.status;
     });
+
     const status1 = vendorMeals.filter((dat) => !dat.status);
     setFinalOrderStatus(status1.length === 0 ? true : false);
-    var vendors = await db.collection("vendors").doc(user).get();
-    var vendorsOrders = vendors.data().orders;
-    const updatedOrder = vendorsOrders.filter((dat) => dat.orderID === orderId);
-    vendorsOrders = vendorsOrders.filter((dat) => dat.orderID !== orderId);
+
+    // updating vendor side order status
+    const updatedOrder = originalVendorOrders.filter(
+      (dat) => dat.orderID === orderId
+    );
+    const newVendorOrders = originalVendorOrders.filter(
+      (dat) => dat.orderID !== orderId
+    );
     updatedOrder[0].status = !finalOrderStatus;
+
     db.collection("vendors")
       .doc(user)
       .update({
-        orders: [...vendorsOrders, ...updatedOrder],
+        orders: [...newVendorOrders, ...updatedOrder],
+      });
+
+    // updating main order status
+    originalOrder.map((dat) =>
+      dat.mealID === md ? (dat.status = !finalOrderStatus) : dat.status
+    );
+    const finalOrderUserStatus = originalOrder.filter(
+      (dat) => !dat.status
+    ).length;
+    db.collection("orders")
+      .doc(orderId)
+      .update({
+        status: finalOrderUserStatus === 0 ? true : false,
       });
   };
   var Total = 0;
@@ -132,7 +156,6 @@ const VendorOrderDetails = (props) => {
             alignItems: "center",
           }}
         >
-          {console.log("hey", finalOrderStatus)}
           <Text>Final Status </Text>
           <Image
             source={finalOrderStatus ? greenTick : yellowTick}

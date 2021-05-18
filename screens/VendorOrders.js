@@ -13,10 +13,12 @@ const Orders = (props) => {
 
   var user = Firebase.auth().currentUser.uid;
   var db = Firebase.firestore();
+
   const fetchItems = async () => {
     var order = await db.collection("vendors").doc(user).get();
     setOrderItem(order.data().orders);
   };
+
   if (!isLoading) {
     return (
       <AppLoading
