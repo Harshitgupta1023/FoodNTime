@@ -16,7 +16,7 @@ import { AntDesign } from "@expo/vector-icons";
 import Colors from "../constants/colors";
 import { showMessage } from "react-native-flash-message";
 
-const MealsCard = ({ meals, navigation, mealId }) => {
+const MealsCard = ({ meals, navigation, mealId, vendor }) => {
   // console.log(meals);
   const { name, discount, price, imageURL, time, rating, available } = meals;
   let TouchableCmp = TouchableOpacity;
@@ -30,7 +30,9 @@ const MealsCard = ({ meals, navigation, mealId }) => {
     <View style={styles.container}>
       <TouchableCmp
         onPress={
-          available
+          vendor
+            ? canOrder
+            : available
             ? canOrder
             : () => {
                 showMessage({

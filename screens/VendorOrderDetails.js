@@ -13,6 +13,7 @@ import CartTile from "../components/CartTile";
 import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 
+import { useSelector } from "react-redux";
 const VendorOrderDetails = (props) => {
   const { orderId, finalStatus, created } = props.route.params;
   const [finalVendorStatus, setFinalVendorStatus] = useState(finalStatus);
@@ -25,6 +26,7 @@ const VendorOrderDetails = (props) => {
   var db = Firebase.firestore();
   var storage = Firebase.storage().ref();
 
+  const xyz = useSelector((state) => state.meals.meals);
   const fetchItems = async () => {
     var order = await db.collection("orders").doc(orderId).get();
     var orderData = order.data().meals;
@@ -63,7 +65,7 @@ const VendorOrderDetails = (props) => {
       />
     );
   }
-
+  console.log(xyz);
   orderedMeal.map((dat) => {
     const meal0 = meals.filter((data) => data.id === dat.mealID);
     const meal1 = { ...dat, ...meal0[0] };

@@ -5,37 +5,39 @@ import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 
 import MealsCard from "../components/MealsCard";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchMealsRedux } from "../redux/actions/user";
 
 const VendorDashBoard = (props) => {
-  const [meals, setMeals] = useState();
-  const [mealsId, setMealsId] = useState();
+  const dispatch = useDispatch();
+
   const [loading, setLoading] = useState(true);
 
   const fetchMeals = async () => {
     var storage = Firebase.storage().ref();
-    var user = Firebase.auth().currentUser;
     var db = Firebase.firestore();
     var obj = {};
-    var objId = [];
-    var dat = await db
-      .collection("meals")
-      .where("vendorID", "==", user.uid)
-      .get();
+    var reduxObj = [];
+    var reduxObjId = [];
+    var dat = await db.collection("meals").get();
     await Promise.all(
       dat.docs.map(async (doc) => {
-        objId.push(doc.id);
+        reduxObjId.push(doc.id);
         obj[doc.id] = doc.data();
         try {
           const newURL = await storage
             .child(doc.data().imageURL)
             .getDownloadURL();
           obj[doc.id].imageURL = newURL;
+          reduxObj.push({ id: doc.id, ...obj[doc.id] });
         } catch (err) {}
       })
     );
-    setMealsId(objId);
-    setMeals(obj);
+    dispatch(fetchMealsRedux(reduxObj, reduxObjId));
   };
+
+  const meals = useSelector((state) => state.meals.filteredMeals);
+  const mealsId = useSelector((state) => state.meals.filteredMealsID);
 
   if (loading) {
     return (
@@ -57,8 +59,9 @@ const VendorDashBoard = (props) => {
             <MealsCard
               key={dat}
               mealId={dat}
-              meals={meals[dat]}
+              meals={meals.filter((data) => data.id === dat)[0]}
               navigation={props.navigation}
+              vendor
             />
           );
         })}
