@@ -16,9 +16,11 @@ import yellowTick from "../assets/yellowTick.jpg";
 
 const OrderDetails = (props) => {
   const { orderId, finalStatus, created } = props.route.params;
+
   const [isLoading, setIsLoading] = useState(false);
   const [orderedMeal, setOrderedMeals] = useState();
   const [orderedMealId, setOrderedMealsId] = useState();
+
   const meals = useSelector((state) => state.meals.meals);
   const finalOrderMeals = [];
   var db = Firebase.firestore();
@@ -46,12 +48,12 @@ const OrderDetails = (props) => {
       />
     );
   }
-
   orderedMeal.map((dat) => {
     const meal0 = meals.filter((data) => data.id === dat.mealID);
     const meal1 = { ...dat, ...meal0[0] };
     finalOrderMeals.push(meal1);
   });
+
   var Total = 0;
   finalOrderMeals.map((dat) => {
     Total = Total + dat.quantity * dat.price;
@@ -66,18 +68,7 @@ const OrderDetails = (props) => {
       >
         <ScrollView>
           {finalOrderMeals.map((me, idx) => {
-            return (
-              <CartTile
-                status={me.status}
-                key={idx}
-                imageURL={me.imageURL}
-                name={me.name}
-                price={me.price}
-                quantity={me.quantity}
-                time={me.time}
-                noCounter
-              />
-            );
+            return <CartTile meal={me} key={idx} noCounter />;
           })}
         </ScrollView>
       </View>

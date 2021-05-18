@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -24,6 +24,8 @@ const VendorOrderDetails = (props) => {
 
   const [originalVendorOrders, setOriginalVendorOrders] = useState();
   const [originalOrder, setOriginalOrder] = useState();
+
+  const [userId, setUserId] = useState();
   const meals = useSelector((state) => state.meals.meals);
   const finalOrderMeals = [];
 
@@ -34,6 +36,7 @@ const VendorOrderDetails = (props) => {
     var order = await db.collection("orders").doc(orderId).get();
     var orderData = order.data();
     setOriginalOrder(orderData.meals);
+    setUserId(orderData.userID);
 
     var vendors = await db.collection("vendors").doc(user).get();
     var vendorsOrders = vendors.data().orders;
@@ -98,6 +101,20 @@ const VendorOrderDetails = (props) => {
       .update({
         status: finalOrderUserStatus === 0 ? true : false,
       });
+
+    //  updating user order status
+    if (finalOrderUserStatus === 0) {
+      var userDa = await db.collection("users").doc(userId).get();
+      var userData = userDa.data();
+      var newUserData = [];
+      userData.orders.map((dat) => {
+        dat.orderID === orderId ? (dat.status = true) : dat.status;
+        newUserData.push(dat);
+      });
+      db.collection("users").doc(userId).update({
+        orders: newUserData,
+      });
+    }
   };
   var Total = 0;
   vendorMeals.map((dat) => {

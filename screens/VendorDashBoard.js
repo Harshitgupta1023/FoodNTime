@@ -12,6 +12,7 @@ const VendorDashBoard = (props) => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
+  const user = Firebase.auth().currentUser.uid;
 
   const fetchMeals = async () => {
     var storage = Firebase.storage().ref();
@@ -55,7 +56,9 @@ const VendorDashBoard = (props) => {
     <View style={styles.screen}>
       <ScrollView style={{ width: "100%" }}>
         {mealsId.map((dat) => {
-          return (
+          console.log();
+          return meals.filter((data) => data.id === dat)[0].vendorID ===
+            user ? (
             <MealsCard
               key={dat}
               mealId={dat}
@@ -63,7 +66,7 @@ const VendorDashBoard = (props) => {
               navigation={props.navigation}
               vendor
             />
-          );
+          ) : null;
         })}
       </ScrollView>
       <View style={styles.fab}>

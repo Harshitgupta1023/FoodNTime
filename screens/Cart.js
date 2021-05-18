@@ -294,14 +294,12 @@ const Cart = (props) => {
           >
             <ScrollView>
               {orderMeal.map((me, idx) => {
+                me.quantity = falseCartItem[idx].quantity;
                 return (
                   <CartTile
+                    cart
                     key={idx}
-                    imageURL={me.imageURL}
-                    name={me.name}
-                    price={me.price}
-                    quantity={falseCartItem[idx].quantity}
-                    time={me.time}
+                    meal={me}
                     onDel={() => {
                       handleDelete(cartItem[idx].mealID);
                     }}

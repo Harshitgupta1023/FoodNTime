@@ -8,12 +8,15 @@ import { Button, Icon } from "react-native-elements";
 const Orders = (props) => {
   const [orderItem, setOrderItem] = useState();
   const [isLoading, setIsLoading] = useState(false);
+
   var user = Firebase.auth().currentUser.uid;
   var db = Firebase.firestore();
+
   const fetchItems = async () => {
     var order = await db.collection("users").doc(user).get();
     setOrderItem(order.data().orders);
   };
+
   if (!isLoading) {
     return (
       <AppLoading
