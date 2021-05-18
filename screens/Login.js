@@ -24,21 +24,6 @@ const LoginScreen = (props) => {
         firebase.auth.Auth.Persistence.LOCAL
       );
       await Firebase.auth().signInWithEmailAndPassword(email, password);
-      var user = Firebase.auth().currentUser;
-      if (user) {
-        await db
-          .collection("users")
-          .doc(user.uid)
-          .get()
-          .then((doc) => {
-            if (doc.exists) {
-              props.navigation.replace("Food N Time");
-            } else {
-              // doc.data() will be undefined in this case
-              props.navigation.replace("Vendor Dashboard");
-            }
-          });
-      }
     } catch (err) {
       showMessage({
         message: "Login Error",
@@ -75,7 +60,7 @@ const LoginScreen = (props) => {
       userDB = userDB.data();
       if (!userDB) {
         await Firebase.auth().currentUser.updateProfile({
-          photoURL: "images/blankProfile.jpg",
+          photoURL: "images/blankProfile.png",
         });
         await db
           .collection("users")
@@ -84,7 +69,6 @@ const LoginScreen = (props) => {
         console.log("Data Writen successfully");
       }
       setIsLoading(false);
-      props.navigation.replace("Food N Time");
     } catch (err) {
       showMessage({
         message: "Login Error",
@@ -165,7 +149,7 @@ const LoginScreen = (props) => {
         </Formik>
         <View style={styles.button}>
           <GoogleSigninButton
-            style={{ width: 192, height: 48 }}
+            style={{ width: 200, height: 50 }}
             size={GoogleSigninButton.Size.Wide}
             color={GoogleSigninButton.Color.Dark}
             onPress={onGoogleLogin}

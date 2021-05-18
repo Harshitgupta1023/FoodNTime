@@ -27,31 +27,25 @@ const makeID = (length) => {
 };
 
 const VendorAccount = (props) => {
-  const db = Firebase.auth().currentUser;
-  const user = db.providerData[0];
+  const user = Firebase.auth().currentUser;
   const [vendorData, setVendorData] = useState();
   const [check, setCheck] = useState(false);
   const [filePath, setFilePath] = useState();
 
-  useEffect(() => {
-    const func = async () => {
-      var storage = Firebase.storage().ref();
-      var newPath = user.photoURL
-        ? await storage.child(user.photoURL).getDownloadURL()
-        : await storage.child("images/blankProfile.jpg").getDownloadURL();
-      setFilePath(newPath);
-    };
-    func();
-  }, []);
   const filePicker = async () => {
     let file = await ImagePicker.launchImageLibraryAsync();
     setFilePath(file.uri);
   };
 
   var vendor = async () => {
+    var storage = Firebase.storage().ref();
+    var newPath = user.photoURL
+      ? await storage.child(user.photoURL).getDownloadURL()
+      : await storage.child("images/blankProfile.png").getDownloadURL();
+    setFilePath(newPath);
     const dat = await Firebase.firestore()
       .collection("vendors")
-      .doc(db.uid)
+      .doc(user.uid)
       .get();
     setVendorData(dat.data());
   };
@@ -64,7 +58,6 @@ const VendorAccount = (props) => {
   const onSignOut = async () => {
     try {
       await Firebase.auth().signOut();
-      props.navigation.replace("Authentication");
     } catch (err) {
       showMessage({
         message: "Error",
@@ -73,13 +66,32 @@ const VendorAccount = (props) => {
       });
     }
   };
+
+  const verifyEmail = async () => {
+    try {
+      await user.sendEmailVerification();
+      showMessage({
+        message: "Email Sent",
+        description: "Check your Email to verify your Account",
+        type: "success",
+      });
+    } catch (err) {
+      showMessage({
+        message: "Something Went Wrong",
+        description: "Try Again",
+        type: "danger",
+      });
+    }
+  };
+
   const imageChange = async () => {
     try {
       await filePicker();
-      if (!filePath.includes("blank")) {
+      console.log(filePath);
+      if (!filePath.includes("token")) {
         // Create the file metadata
         var storageRef = Firebase.storage().ref();
-        if (user.photoURL) {
+        if (user.photoURL && !user.photoURL.includes("blankProfile")) {
           storageRef.child(user.photoURL).delete();
         }
         var metadata = {
@@ -90,10 +102,16 @@ const VendorAccount = (props) => {
         // Upload file and metadata to the object 'images/mountains.jpg'
         var loc = "images/" + makeID(8) + "-" + Date.now().toString() + ".jpg";
         await storageRef.child(loc).put(blob, metadata);
-        Firebase.auth().currentUser.updateProfile({ photoURL: loc });
+        await user.updateProfile({ photoURL: loc });
         showMessage({
           message: "Image Updated Successfully",
           type: "success",
+        });
+      } else {
+        showMessage({
+          message: "Something Went Wrong",
+          description: "Try Again",
+          type: "danger",
         });
       }
     } catch (err) {
@@ -112,9 +130,8 @@ const VendorAccount = (props) => {
         type: "danger",
       });
     } else {
-      var db0 = Firebase.auth().currentUser;
       try {
-        await db0.updateProfile({
+        await user.updateProfile({
           displayName: name,
         });
         setCheck(!check);
@@ -139,7 +156,7 @@ const VendorAccount = (props) => {
 
   const handleAddress = async () => {
     try {
-      await Firebase.firestore().collection("vendors").doc(db.uid).update({
+      await Firebase.firestore().collection("vendors").doc(user.uid).update({
         address: address,
       });
       setCheck(!check);
@@ -197,7 +214,7 @@ const VendorAccount = (props) => {
             <ImageBackground source={{ uri: filePath }} style={styles.image}>
               <Image
                 style={{ width: 25, height: 25, left: 172, top: 2 }}
-                source={db.emailVerified ? greenTick : redTick}
+                source={user.emailVerified ? greenTick : redTick}
               />
             </ImageBackground>
             <View
@@ -264,12 +281,12 @@ const VendorAccount = (props) => {
               </ListItem>
             ))}
           </View>
-          <View style={{ padding: 10, marginBottom: 10 }}>
+          <View style={{ paddingTop: 10, marginBottom: 10 }}>
             <Button
               raised={true}
               title="Sign Out"
               onPress={onSignOut}
-              buttonStyle={{ width: 100 }}
+              buttonStyle={{ width: 175 }}
             />
           </View>
           <View style={{ marginBottom: 10 }}>
@@ -279,6 +296,29 @@ const VendorAccount = (props) => {
               onPress={() => {
                 props.navigation.navigate("Passwordprofile");
               }}
+              buttonStyle={{ width: 175 }}
+            />
+          </View>
+          {!user.emailVerified ? (
+            <View style={{ marginBottom: 10 }}>
+              <Button
+                raised={true}
+                title="Verify Email"
+                onPress={verifyEmail}
+                buttonStyle={{ width: 175 }}
+              />
+            </View>
+          ) : null}
+          <View style={{ marginBottom: 10 }}>
+            <Button
+              raised={true}
+              title="Delete your Account"
+              onPress={() =>
+                Alert.alert(
+                  "Account Deletion",
+                  "This option isn't available for Vendors. To delete your account contact Food N Time support team through Email"
+                )
+              }
               buttonStyle={{ width: 175 }}
             />
           </View>

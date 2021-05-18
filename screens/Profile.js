@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ImageBackground } from "react-native";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, Alert } from "react-native";
 import { showMessage } from "react-native-flash-message";
 import * as ImagePicker from "expo-image-picker";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -35,7 +34,7 @@ const Profile = (props) => {
       var storage = Firebase.storage().ref();
       var newPath = user.photoURL
         ? await storage.child(user.photoURL).getDownloadURL()
-        : await storage.child("images/blankProfile.jpg").getDownloadURL();
+        : await storage.child("images/blankProfile.png").getDownloadURL();
       setFilePath(newPath);
     };
     func();
@@ -49,11 +48,17 @@ const Profile = (props) => {
   const onSignOut = async () => {
     try {
       if (user.providerData[0].providerId.includes("google")) {
+        GoogleSignin.configure({
+          offlineAccess: true,
+          webClientId: process.env.GOOGLE_OAUTH_ID_WEB,
+          androidClientId: process.env.GOOGLE_OAUTH_ID_ANDROID,
+          scopes: ["profile", "email"],
+        });
         await GoogleSignin.revokeAccess();
       }
       await Firebase.auth().signOut();
-      props.navigation.replace("Authentication");
     } catch (err) {
+      console.log(err);
       showMessage({
         message: "Error",
         description: err.message,
@@ -98,7 +103,7 @@ const Profile = (props) => {
       if (!filePath.includes("token")) {
         // Create the file metadata
         var storageRef = Firebase.storage().ref();
-        if (user.photoURL) {
+        if (user.photoURL && !user.photoURL.includes("blankProfile")) {
           storageRef.child(user.photoURL).delete();
         }
         var metadata = {
@@ -114,6 +119,12 @@ const Profile = (props) => {
           message: "Image Updated Successfully",
           type: "success",
         });
+      } else {
+        showMessage({
+          message: "Something Went Wrong",
+          description: "Try Again",
+          type: "danger",
+        });
       }
     } catch (err) {
       showMessage({
@@ -123,6 +134,50 @@ const Profile = (props) => {
       });
     }
   };
+
+  const verifyEmail = async () => {
+    try {
+      await user.sendEmailVerification();
+      showMessage({
+        message: "Email Sent",
+        description: "Check your Email to verify your Account",
+        type: "success",
+      });
+    } catch (err) {
+      showMessage({
+        message: "Something Went Wrong",
+        description: "Try Again",
+        type: "danger",
+      });
+    }
+  };
+
+  const deleteAccount = async () => {
+    try {
+      var db = Firebase.firestore();
+      await db.collection("users").doc(user.uid).delete();
+      if (user.providerData[0].providerId.includes("google")) {
+        await GoogleSignin.revokeAccess();
+      }
+      var storageRef = Firebase.storage().ref();
+      if (user.photoURL && !user.photoURL.includes("blankProfile")) {
+        await storageRef.child(user.photoURL).delete();
+      }
+      await user.delete();
+      showMessage({
+        message: "Account Deleted Successfully",
+        description: "We are sad to see you Go",
+        type: "success",
+      });
+    } catch (err) {
+      showMessage({
+        message: "Something Went Wrong",
+        description: err.message,
+        type: "danger",
+      });
+    }
+  };
+
   const list = [
     {
       name: "New Name",
@@ -218,12 +273,12 @@ const Profile = (props) => {
             </ListItem>
           ))}
         </View>
-        <View style={{ padding: 10, marginBottom: 10 }}>
+        <View style={{ paddingTop: 10, marginBottom: 10 }}>
           <Button
             raised={true}
             title="Sign Out"
             onPress={onSignOut}
-            buttonStyle={{ width: 100 }}
+            buttonStyle={{ width: 175 }}
           />
         </View>
         {!user.providerData[0].providerId.includes("google") ? (
@@ -238,6 +293,40 @@ const Profile = (props) => {
             />
           </View>
         ) : null}
+        {!user.emailVerified ? (
+          <View style={{ marginBottom: 10 }}>
+            <Button
+              raised={true}
+              title="Verify Email"
+              onPress={verifyEmail}
+              buttonStyle={{ width: 175 }}
+            />
+          </View>
+        ) : null}
+        <View style={{ marginBottom: 10 }}>
+          <Button
+            raised={true}
+            title="Delete your Account"
+            onPress={() =>
+              Alert.alert(
+                "Account Deletion",
+                "This action is irreversible. Do you want to continue?",
+                [
+                  {
+                    text: "Yes",
+                    onPress: deleteAccount,
+                  },
+                  {
+                    text: "Cancel",
+                    onPress: () => console.log("Cancel Pressed"),
+                    style: "cancel",
+                  },
+                ]
+              )
+            }
+            buttonStyle={{ width: 175 }}
+          />
+        </View>
       </View>
     </ScrollView>
   );
