@@ -9,47 +9,43 @@ import {
 } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
+
 import CartTile from "../components/CartTile";
+import { useSelector } from "react-redux";
+
 import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
-
 const VendorOrderDetails = (props) => {
-  const { orderId, finalStatus, created } = props.route.params;
-  const [finalVendorStatus, setFinalVendorStatus] = useState(finalStatus);
+  const { orderId, created } = props.route.params;
   const [isLoading, setIsLoading] = useState(false);
+
   const [orderedMeal, setOrderedMeals] = useState();
-  const [orderedMealId, setOrderedMealsId] = useState();
-  const user = Firebase.auth().currentUser.uid;
-  const [meals, setMeals] = useState([]);
+  const [finalOrderStatus, setFinalOrderStatus] = useState();
+
+  const [originalVendorOrders, setOriginalVendorOrders] = useState();
+  const [originalOrder, setOriginalOrder] = useState();
+
+  const [userId, setUserId] = useState();
+  const meals = useSelector((state) => state.meals.meals);
   const finalOrderMeals = [];
+
   var db = Firebase.firestore();
-  var storage = Firebase.storage().ref();
+  const user = Firebase.auth().currentUser.uid;
 
   const fetchItems = async () => {
     var order = await db.collection("orders").doc(orderId).get();
-    var orderData = order.data().meals;
-    var mealId = [];
-    orderData.map((dat) => {
-      mealId.push(dat.mealID);
-    });
-    setOrderedMeals(order.data().meals);
-    setOrderedMealsId(mealId);
-    var obj = {};
-    var reduxObj = [];
-    var dat = await db.collection("meals").get();
-    await Promise.all(
-      dat.docs.map(async (doc) => {
-        obj[doc.id] = doc.data();
-        try {
-          const newURL = await storage
-            .child(doc.data().imageURL)
-            .getDownloadURL();
-          obj[doc.id].imageURL = newURL;
-          reduxObj.push({ id: doc.id, ...obj[doc.id] });
-        } catch (err) {}
-      })
+    var orderData = order.data();
+    setOriginalOrder(orderData.meals);
+    setUserId(orderData.userID);
+
+    var vendors = await db.collection("vendors").doc(user).get();
+    var vendorsOrders = vendors.data().orders;
+    var renderOrderDetails = vendorsOrders.filter(
+      (dat) => dat.orderID === orderId
     );
-    setMeals(reduxObj);
+    setOriginalVendorOrders(vendorsOrders);
+    setFinalOrderStatus(renderOrderDetails[0].status);
+    setOrderedMeals(orderData.meals);
   };
 
   if (!isLoading) {
@@ -63,16 +59,68 @@ const VendorOrderDetails = (props) => {
       />
     );
   }
-
   orderedMeal.map((dat) => {
     const meal0 = meals.filter((data) => data.id === dat.mealID);
     const meal1 = { ...dat, ...meal0[0] };
     finalOrderMeals.push(meal1);
   });
+  const vendorMeals = finalOrderMeals.filter((me) => me.vendorID === user);
+
+  const handleChangeMealStatus = async (md, newStatus) => {
+    vendorMeals.map((dat) => {
+      dat.mealID === md ? (dat.status = newStatus) : dat.status;
+    });
+
+    const status1 = vendorMeals.filter((dat) => !dat.status);
+    setFinalOrderStatus(status1.length === 0 ? true : false);
+
+    // updating vendor side order status
+    const updatedOrder = originalVendorOrders.filter(
+      (dat) => dat.orderID === orderId
+    );
+    const newVendorOrders = originalVendorOrders.filter(
+      (dat) => dat.orderID !== orderId
+    );
+    updatedOrder[0].status = !finalOrderStatus;
+
+    db.collection("vendors")
+      .doc(user)
+      .update({
+        orders: [...newVendorOrders, ...updatedOrder],
+      });
+
+    // updating main order status
+    originalOrder.map((dat) =>
+      dat.mealID === md ? (dat.status = !finalOrderStatus) : dat.status
+    );
+    const finalOrderUserStatus = originalOrder.filter(
+      (dat) => !dat.status
+    ).length;
+    db.collection("orders")
+      .doc(orderId)
+      .update({
+        status: finalOrderUserStatus === 0 ? true : false,
+      });
+
+    //  updating user order status
+    if (finalOrderUserStatus === 0) {
+      var userDa = await db.collection("users").doc(userId).get();
+      var userData = userDa.data();
+      var newUserData = [];
+      userData.orders.map((dat) => {
+        dat.orderID === orderId ? (dat.status = true) : dat.status;
+        newUserData.push(dat);
+      });
+      db.collection("users").doc(userId).update({
+        orders: newUserData,
+      });
+    }
+  };
   var Total = 0;
-  finalOrderMeals.map((dat) => {
-    dat.vendorID === user ? (Total = Total + dat.quantity * dat.price) : Total;
+  vendorMeals.map((dat) => {
+    Total = Total + dat.quantity * dat.price;
   });
+
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Order Details </Text>
@@ -82,23 +130,17 @@ const VendorOrderDetails = (props) => {
         }}
       >
         <ScrollView>
-          {finalOrderMeals.map((me, idx) => {
-            return me.vendorID === user ? (
+          {vendorMeals.map((me, idx) => {
+            return (
               <CartTile
                 noCounter
-                status={me.status}
+                meal={me}
                 key={idx}
-                imageURL={me.imageURL}
-                name={me.name}
-                price={me.price}
-                quantity={me.quantity}
-                time={me.time}
                 vendor
-                mealId={me.mealID}
                 orderID={orderId}
-                setFinalVendorStatus={setFinalVendorStatus}
+                handleChangeMealStatus={handleChangeMealStatus}
               />
-            ) : null;
+            );
           })}
         </ScrollView>
       </View>
@@ -133,11 +175,11 @@ const VendorOrderDetails = (props) => {
         >
           <Text>Final Status </Text>
           <Image
-            source={finalVendorStatus ? greenTick : yellowTick}
+            source={finalOrderStatus ? greenTick : yellowTick}
             style={{ width: 40, height: 40, margin: 5 }}
           />
           <Text style={{ fontFamily: "roboto-regular", fontWeight: "bold" }}>
-            {finalVendorStatus ? "Completed" : "Processing"}
+            {finalOrderStatus ? "Completed" : "Processing"}
           </Text>
         </View>
       </View>

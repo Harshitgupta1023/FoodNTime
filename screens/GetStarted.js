@@ -35,18 +35,17 @@ const StartUpScreen = (props) => {
     <View style={styles.screen}>
       <ImageBackground source={appName} style={styles.name} />
       <ImageBackground source={appLogo} style={styles.image} />
-      <Button
-        title="LAUNCH"
-        onPress={handleAuthState}
-        titleStyle={{ color: colors.accentColor }}
-        buttonStyle={{
-          width: 150,
-          backgroundColor: "white",
-          borderColor: colors.accentColor,
-          borderRadius: 20,
-          borderWidth: 2,
-        }}
-      />
+      <View style={styles.buttonContainer}>
+        <Button
+          title="LAUNCH"
+          onPress={handleAuthState}
+          titleStyle={{ color: colors.accentColor }}
+          buttonStyle={{
+            width: 150,
+            backgroundColor: "white",
+          }}
+        />
+      </View>
     </View>
   );
 };
@@ -65,6 +64,12 @@ const styles = StyleSheet.create({
   name: {
     width: 300,
     height: 90,
+  },
+  buttonContainer: {
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: colors.accentColor,
+    overflow: "hidden",
   },
 });
 export default StartUpScreen;

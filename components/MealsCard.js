@@ -17,7 +17,7 @@ import Colors from "../constants/colors";
 import { showMessage } from "react-native-flash-message";
 import Firebase from "../config/Firebase";
 
-const MealsCard = ({ meals, navigation, mealId }) => {
+const MealsCard = ({ meals, navigation, mealId, vendor }) => {
   // console.log(meals);
   const { name, discount, price, imageURL, time, rating, available } = meals;
   let TouchableCmp = TouchableOpacity;
