@@ -8,65 +8,59 @@ import greenTick from "../assets/greenTick.jpg";
 import yellowTick from "../assets/yellowTick.jpg";
 import { RadioButton } from "react-native-paper";
 import Firebase from "../config/Firebase";
-import firebase from "firebase";
+
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const CartTile = ({
-  imageURL,
-  name,
-  price,
-  quantity,
-  time,
+  meal,
   onDel,
   onIncrease,
   onDecrease,
   noCounter,
-  status,
   vendor,
   orderID,
-  mealId,
-  setFinalVendorStatus,
+  handleChangeMealStatus,
 }) => {
-  const user = Firebase.auth().currentUser.uid;
+  const { imageURL, name, price, quantity, time, status, mealID } = meal;
   const [status0, setStatus0] = useState(status);
   const handleStatus = async () => {
     var db = Firebase.firestore().collection("orders").doc(orderID);
     var meals = await db.get();
-    var email = meals.data().email;
     var mealsData = meals.data().meals;
     mealsData.map((dat) => {
-      dat.mealID === mealId
+      dat.mealID === mealID
         ? (dat.status = !status0)
         : (dat.status = dat.status);
     });
     await db.update({
       meals: mealsData,
     });
-    var status1 = mealsData.filter((dat) => dat.status === false);
-    var vendorServer = Firebase.firestore().collection("vendors").doc(user);
-    var vendorss = await vendorServer.get();
-    var copyVendorData = vendorss.data().orders;
-    copyVendorData.map((meal) => {
-      meal.orderID === orderID
-        ? (meal.status = status1.length === 0 ? true : false)
-        : (meal.status = meal.status);
-    });
-    await vendorServer.update({
-      orders: copyVendorData,
-    });
-    setFinalVendorStatus(status1.length === 0 ? true : false);
-    console.log(email);
-    if (status1.length === 0) {
-      axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
-        email: email,
-        subject: "Order Ready!!!",
-        name: "User",
-        vendor: false,
-        orderID: orderID,
-        placed: true,
-      });
-    }
+    // var status1 = mealsData.filter((dat) => dat.status === false);
+    // var vendorServer = Firebase.firestore().collection("vendors").doc(user);
+    // var vendorss = await vendorServer.get();
+    // var copyVendorData = vendorss.data().orders;
+    // copyVendorData.map((meal) => {
+    //   meal.orderID === orderID
+    //     ? (meal.status = status1.length === 0 ? true : false)
+    //     : (meal.status = meal.status);
+    // });
+    // await vendorServer.update({
+    //   orders: copyVendorData,
+    // });
+    // setFinalVendorStatus(status1.length === 0 ? true : false);
+    // console.log(email);
+    // if (status1.length === 0) {
+    //   axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
+    //     email: email,
+    //     subject: "Order Ready!!!",
+    //     name: "User",
+    //     vendor: false,
+    //     orderID: orderID,
+    //     placed: true,
+    //   });
+    // }
+    handleChangeMealStatus(mealID, !status0);
     setStatus0(!status0);
   };
   return (
@@ -150,26 +144,16 @@ const CartTile = ({
       {vendor ? (
         <View style={styles.vendorContainer}>
           <Text style={styles.vendorText}>Meal Status</Text>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-              marginHorizontal: 8,
-            }}
-          >
+          <View style={styles.statusOption}>
             <Text>Processing</Text>
             <RadioButton
-              disabled={status0}
               status={!status0 ? "checked" : "unchecked"}
               onPress={() => handleStatus()}
             />
           </View>
           <View
             style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
+              ...styles.statusOption,
               marginHorizontal: 5,
             }}
           >
@@ -250,6 +234,12 @@ const styles = StyleSheet.create({
   vendorText: {
     fontFamily: "roboto-regular",
     fontSize: 18,
+  },
+  statusOption: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 8,
   },
 });
 
