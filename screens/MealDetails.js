@@ -71,6 +71,7 @@ const MealDetails = (props) => {
     dessert,
     storeAddress,
   } = meals;
+
   const ratingData = meals.rating;
   var rating = ratingData ? 0 : 5;
   ratingData
