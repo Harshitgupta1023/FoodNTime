@@ -22,12 +22,12 @@ const OrderNavigator = () => {
   return (
     <OrderStack.Navigator>
       <OrderStack.Screen
-        name="order"
+        name="Order"
         component={Orders}
         options={{ headerShown: false }}
       />
       <OrderStack.Screen
-        name="orderDetails"
+        name="Order Details"
         component={OrderDetails}
         options={{ headerShown: false }}
       />
@@ -45,7 +45,7 @@ const ProfileNavigator = () => {
       />
       <ProfileStack.Screen
         options={{ headerShown: false }}
-        name="Passwordprofile"
+        name="Update Password"
         component={PasswordProfile}
       />
     </ProfileStack.Navigator>
@@ -61,7 +61,7 @@ const UserTab = () => {
   return (
     <Tab.Navigator {...tabBarOption}>
       <Tab.Screen
-        name="meals"
+        name="Meals"
         component={HomePage}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
@@ -73,7 +73,7 @@ const UserTab = () => {
         }}
       />
       <Tab.Screen
-        name="order"
+        name="Order"
         component={OrderNavigator}
         options={{
           tabBarIcon: ({ focused, color, size }) => {
@@ -83,7 +83,7 @@ const UserTab = () => {
         }}
       />
       <Tab.Screen
-        name="account"
+        name="Account"
         component={ProfileNavigator}
         options={{
           tabBarIcon: ({ focused, color, size }) => {

@@ -13,7 +13,7 @@ const OrdersTile = ({ orderId, price, date, status, navigation }) => {
   return (
     <TouchableNativeFeedback
       onPress={() => {
-        navigation.navigate("orderDetails", {
+        navigation.navigate("Order Details", {
           orderId: orderId,
           finalStatus: status,
           created: date,
@@ -51,7 +51,6 @@ const OrdersTile = ({ orderId, price, date, status, navigation }) => {
               alignItems: "center",
             }}
           >
-            {/* <Text>{status ? "Completed" : "Processing"}</Text> */}
             <Image
               source={status ? greenTick : yellowTick}
               style={{ width: 50, height: 50 }}

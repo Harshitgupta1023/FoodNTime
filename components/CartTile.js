@@ -216,10 +216,10 @@ const CartTile = ({
               </View>
               <View style={styles.storeContainer}>
                 <Icon
-                  name="map-outline"
-                  type="ionicon"
+                  name="location-pin"
+                  type="Ionicons"
                   size={25}
-                  color="green"
+                  color="red"
                   containerStyle={{
                     borderWidth: 0.3,
                     borderRadius: 50,

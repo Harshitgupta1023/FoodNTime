@@ -33,14 +33,19 @@ const SignUpScreen = (props) => {
           });
           db.collection("users")
             .doc(user.uid)
-            .set({ cart: [], orders: [], rating: 5 })
+            .set({
+              name: fullName,
+              email: email,
+              cart: [],
+              orders: [],
+              rating: 5,
+            })
             .then(() => {
               console.log("Document successfully written!");
             })
             .catch((error) => {
               console.error("Error writing document: ", error);
             });
-          props.navigation.replace("Food N Time");
         }
       } else {
         await Firebase.auth().createUserWithEmailAndPassword(email, password);
@@ -51,14 +56,19 @@ const SignUpScreen = (props) => {
           });
           db.collection("vendors")
             .doc(store.uid)
-            .set({ rating: [], orders: [], address: storeAddress })
+            .set({
+              name: storeName,
+              email: email,
+              rating: [],
+              orders: [],
+              address: storeAddress,
+            })
             .then(() => {
               console.log("Document successfully written!");
             })
             .catch((error) => {
               console.error("Error writing document: ", error);
             });
-          props.navigation.replace("Vendor Dashboard");
         }
       }
     } catch (err) {

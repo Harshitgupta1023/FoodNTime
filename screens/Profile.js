@@ -74,12 +74,13 @@ const Profile = (props) => {
         type: "danger",
       });
     } else {
-      var db = user;
+      var db = Firebase.firestore();
       try {
-        await db.updateProfile({
+        await user.updateProfile({
           displayName: name,
         });
-        showMessage({
+        await db.collection("users").doc(user.uid).update({ name: name });
+        await showMessage({
           message: "Name Updated",
           description: "Name is changed!!!!",
           type: "success",
@@ -287,7 +288,7 @@ const Profile = (props) => {
               raised={true}
               title="Update Password"
               onPress={() => {
-                props.navigation.navigate("Passwordprofile");
+                props.navigation.navigate("Update Password");
               }}
               buttonStyle={{ width: 175 }}
             />
