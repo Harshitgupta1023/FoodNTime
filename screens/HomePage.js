@@ -39,6 +39,7 @@ const HomePage = (props) => {
             id: doc.id,
             ...obj[doc.id],
             storeAddress: vendorData.data().address,
+            vendorName: vendorData.data().name,
           });
         } catch (err) {}
       })
