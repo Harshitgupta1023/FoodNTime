@@ -40,6 +40,14 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
       }
     }
   };
+  const ratingData = rating;
+  var ratingValue = ratingData ? 0 : 5;
+  ratingData
+    ? ratingData.map((dat) => (ratingValue = ratingValue + parseInt(dat.value)))
+    : null;
+  ratingValue =
+    ratingValue === 0 ? 0 : ratingValue / (ratingData ? ratingData.length : 1);
+
   return (
     <TouchableCmp onPress={Openable}>
       <View style={styles.container}>
@@ -93,16 +101,14 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
               >
                 <Text style={{ fontSize: 16, color: "white" }}>₹ {price}</Text>
               </View>
-              {rating === undefined ? null : (
-                <View style={styles.ratingContainer}>
-                  <Text style={{ fontSize: 16, color: "white" }}>
-                    {rating[0].rating}
-                  </Text>
-                  <View style={{ justifyContent: "center", paddingLeft: 3 }}>
-                    <AntDesign name="star" size={16} color="white" />
-                  </View>
+              <View style={styles.ratingContainer}>
+                <Text style={{ fontSize: 16, color: "white" }}>
+                  {ratingValue}
+                </Text>
+                <View style={{ justifyContent: "center", paddingLeft: 3 }}>
+                  <AntDesign name="star" size={16} color="white" />
                 </View>
-              )}
+              </View>
             </View>
             {vendor ? null : (
               <View
