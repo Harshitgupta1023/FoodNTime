@@ -71,7 +71,10 @@ const MealDetails = (props) => {
     dessert,
     storeAddress,
   } = meals;
-  const rating = meals.rating ? meals.rating[0].rating : 5;
+  const ratingData = meals.rating;
+  var rating = ratingData ? 0 : 5;
+  ratingData.map((dat) => (rating = rating + parseInt(dat.value)));
+  rating = rating === 0 ? 0 : rating / ratingData.length;
   const courseType = dessert ? "Dessert" : starter ? "Starter" : "Main Course";
   const list = [
     {
@@ -155,6 +158,7 @@ const MealDetails = (props) => {
             showRating
             ratingTextColor="rgb(0, 0, 0)"
             startingValue={rating}
+            fractions={1}
             style={{ height: 10 }}
           />
         </ListItem>

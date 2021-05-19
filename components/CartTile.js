@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
-import { Icon, Overlay } from "react-native-elements";
+import { Icon, Overlay, Rating } from "react-native-elements";
 import Colors from "../constants/colors";
 import Counter from "./Counter";
 import greenTick from "../assets/greenTick.jpg";
@@ -24,8 +24,12 @@ const CartTile = ({
   customer,
 }) => {
   const { imageURL, name, price, quantity, time, status, mealID } = meal;
+
   const [status0, setStatus0] = useState(status);
   const [visible, setVisible] = useState(false);
+  const [isRated, setIsRated] = useState(false);
+
+  const user = Firebase.auth().currentUser.uid;
 
   const OverLayComp = (props) => {
     return (
@@ -43,6 +47,7 @@ const CartTile = ({
       </Overlay>
     );
   };
+
   const handleStatus = async () => {
     var db = Firebase.firestore().collection("orders").doc(orderID);
     var meals = await db.get();
@@ -59,6 +64,20 @@ const CartTile = ({
     setStatus0(!status0);
   };
 
+  const handleRating = async (mealID, ratingValue) => {
+    var db = Firebase.firestore().collection("meals").doc(mealID);
+    var ratin = await db.get();
+    var ratingData =
+      ratin.data().rating === undefined ? [] : ratin.data().rating;
+    var filteredData = ratingData.filter((dat) => dat.userID !== user);
+    var updatedRating = [...filteredData, { userID: user, value: ratingValue }];
+    // ERROR baar baar kar skte change .
+    await db.update({
+      rating: updatedRating,
+    });
+    setIsRated(true);
+    console.log("done", mealID, ratingValue);
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -185,7 +204,23 @@ const CartTile = ({
           status ? (
             <View style={styles.bottomContainer}>
               <View style={styles.ratingContainer}>
-                <Text>Rating</Text>
+                <Icon
+                  name="home"
+                  onPress={() => {
+                    console.log(mealID);
+                    handleRating(mealID);
+                  }}
+                />
+                <Text style={{ fontFamily: "roboto-regular", fontSize: 20 }}>
+                  Rating :{"  "}
+                </Text>
+                <Rating
+                  type="custom"
+                  imageSize={25}
+                  startingValue={0}
+                  readonly={isRated}
+                  onFinishRating={(rating) => handleRating(mealID, rating)}
+                />
               </View>
               <View style={styles.storeContainer}>
                 <Icon
@@ -294,6 +329,7 @@ const styles = StyleSheet.create({
   },
   ratingContainer: {
     width: "80%",
+    flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
   },
