@@ -183,7 +183,6 @@ const Cart = (props) => {
           ...falseCartItem[i],
           status: false,
           userRating: 0,
-          vendorRating: 0,
         };
         orderedMeals.push(tmp);
       }
