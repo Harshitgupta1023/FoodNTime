@@ -24,16 +24,17 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
   if (Platform.OS === "android" && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }
+  const getAddress = async () => {
+    var vendorId = meals.vendorID;
+    var vendorData = await Firebase.firestore()
+      .collection("vendors")
+      .doc(vendorId)
+      .get();
+  };
   const Openable = async () => {
     if (available) {
       navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
     } else {
-      var db = Firebase.firestore();
-      var vendor = await db
-        .collection("vendors")
-        .doc(Firebase.auth().currentUser.uid)
-        .get();
-      vendor = vendor.data();
       if (vendor) {
         navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
       } else {
@@ -46,8 +47,8 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
     }
   };
   return (
-    <View style={styles.container}>
-      <TouchableCmp onPress={Openable}>
+    <TouchableCmp onPress={Openable}>
+      <View style={styles.container}>
         <View style={styles.mealItem}>
           <View
             style={{
@@ -84,30 +85,50 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
               </View>
             </ImageBackground>
           </View>
-          <View style={{ ...styles.mealRow, ...styles.mealDetail }}>
+          <View style={{ padding: 2 }}>
+            <View style={{ ...styles.mealRow, ...styles.mealDetail }}>
+              <View
+                style={{
+                  ...styles.ratingContainer,
+                  width: "25%",
+                  backgroundColor: Colors.accentColor,
+                  margin: 2,
+                  padding: 1,
+                }}
+              >
+                <Text style={{ fontSize: 16, color: "white" }}>₹ {price}</Text>
+              </View>
+              {rating === undefined ? null : (
+                <View style={styles.ratingContainer}>
+                  <Text style={{ fontSize: 16, color: "white" }}>
+                    {rating[0].rating}
+                  </Text>
+                  <View style={{ justifyContent: "center", paddingLeft: 3 }}>
+                    <AntDesign name="star" size={16} color="white" />
+                  </View>
+                </View>
+              )}
+            </View>
             <View
               style={{
-                ...styles.ratingContainer,
-                width: "25%",
-                backgroundColor: Colors.accentColor,
+                borderTopWidth: 1,
+                marginHorizontal: 10,
+                marginTop: 3,
+                marginBottom: 1,
+              }}
+            ></View>
+            <View
+              style={{
+                ...styles.mealRow,
+                ...styles.mealDetail,
               }}
             >
-              <Text style={{ fontSize: 16, color: "white" }}>₹ {price}</Text>
+              <Text>STORE : {meals.storeAddress}</Text>
             </View>
-            {rating === undefined ? null : (
-              <View style={styles.ratingContainer}>
-                <Text style={{ fontSize: 16, color: "white" }}>
-                  {rating[0].rating}
-                </Text>
-                <View style={{ justifyContent: "center", paddingLeft: 3 }}>
-                  <AntDesign name="star" size={16} color="white" />
-                </View>
-              </View>
-            )}
           </View>
         </View>
-      </TouchableCmp>
-    </View>
+      </View>
+    </TouchableCmp>
   );
 };
 
@@ -116,7 +137,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   mealItem: {
-    height: 200,
+    height: 230,
     width: "100%",
     backgroundColor: "rgba(0,0,105,0.2)",
     borderRadius: 10,
@@ -165,10 +186,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   mealHeader: {
-    height: "85%",
+    height: "75%",
   },
   mealDetail: {
-    height: "15%",
     paddingHorizontal: 10,
     justifyContent: "space-between",
     alignItems: "center",

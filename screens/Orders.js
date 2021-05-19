@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 import OrderTile from "../components/OrderTile";
 import { Button, Icon } from "react-native-elements";
+
+const screenHeight = Dimensions.get("window").height;
+const screenWidth = Dimensions.get("window").width;
 
 const Orders = (props) => {
   const [orderItem, setOrderItem] = useState();
@@ -58,20 +61,26 @@ const Orders = (props) => {
           />
         </View>
       </View>
-      <ScrollView>
-        {orderItem.map((me, idx) => {
-          return (
-            <OrderTile
-              key={idx}
-              orderId={me.orderID}
-              price={me.price}
-              date={me.date}
-              status={me.status}
-              navigation={props.navigation}
-            />
-          );
-        })}
-      </ScrollView>
+      <View
+        style={{
+          height: (3 * Dimensions.get("window").height) / 5 + 50,
+        }}
+      >
+        <ScrollView>
+          {orderItem.map((me, idx) => {
+            return (
+              <OrderTile
+                key={idx}
+                orderId={me.orderID}
+                price={me.price}
+                date={me.date}
+                status={me.status}
+                navigation={props.navigation}
+              />
+            );
+          })}
+        </ScrollView>
+      </View>
     </View>
   );
 };
