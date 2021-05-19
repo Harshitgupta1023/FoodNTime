@@ -24,13 +24,7 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
   if (Platform.OS === "android" && Platform.Version >= 21) {
     TouchableCmp = TouchableNativeFeedback;
   }
-  const getAddress = async () => {
-    var vendorId = meals.vendorID;
-    var vendorData = await Firebase.firestore()
-      .collection("vendors")
-      .doc(vendorId)
-      .get();
-  };
+
   const Openable = async () => {
     if (available) {
       navigation.navigate("mealDetail", { meals: meals, mealId: mealId });
@@ -49,11 +43,12 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
   return (
     <TouchableCmp onPress={Openable}>
       <View style={styles.container}>
-        <View style={styles.mealItem}>
+        <View style={{ ...styles.mealItem, height: vendor ? 200 : 230 }}>
           <View
             style={{
               ...styles.mealRow,
               ...styles.mealHeader,
+              height: vendor ? "83%" : "73%",
             }}
           >
             <ImageBackground source={{ uri: imageURL }} style={styles.bgImage}>
@@ -109,22 +104,26 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
                 </View>
               )}
             </View>
-            <View
-              style={{
-                borderTopWidth: 1,
-                marginHorizontal: 10,
-                marginTop: 3,
-                marginBottom: 1,
-              }}
-            ></View>
-            <View
-              style={{
-                ...styles.mealRow,
-                ...styles.mealDetail,
-              }}
-            >
-              <Text>STORE : {meals.storeAddress}</Text>
-            </View>
+            {vendor ? null : (
+              <View
+                style={{
+                  borderTopWidth: 1,
+                  marginHorizontal: 10,
+                  marginTop: 3,
+                  marginBottom: 1,
+                }}
+              ></View>
+            )}
+            {vendor ? null : (
+              <View
+                style={{
+                  ...styles.mealRow,
+                  ...styles.mealDetail,
+                }}
+              >
+                <Text> Offered By : {meals.vendorName}</Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
