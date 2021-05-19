@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
+import axios from "axios";
 
 import CartTile from "../components/CartTile";
 import { useSelector } from "react-redux";
@@ -113,6 +114,14 @@ const VendorOrderDetails = (props) => {
       });
       db.collection("users").doc(userId).update({
         orders: newUserData,
+      });
+      axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
+        email: userData.email,
+        subject: "Order Ready!!",
+        name: userData.name,
+        vendor: false,
+        orderID: orderId,
+        placed: true,
       });
     }
   };

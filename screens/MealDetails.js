@@ -73,8 +73,10 @@ const MealDetails = (props) => {
   } = meals;
   const ratingData = meals.rating;
   var rating = ratingData ? 0 : 5;
-  ratingData.map((dat) => (rating = rating + parseInt(dat.value)));
-  rating = rating === 0 ? 0 : rating / ratingData.length;
+  ratingData
+    ? ratingData.map((dat) => (rating = rating + parseInt(dat.value)))
+    : null;
+  rating = rating === 0 ? 0 : rating / (ratingData ? ratingData.length : 1);
   const courseType = dessert ? "Dessert" : starter ? "Starter" : "Main Course";
   const list = [
     {

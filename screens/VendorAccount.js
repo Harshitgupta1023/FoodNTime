@@ -131,9 +131,11 @@ const VendorAccount = (props) => {
       });
     } else {
       try {
+        var db = Firebase.firestore();
         await user.updateProfile({
           displayName: name,
         });
+        await db.collection("vendors").doc(user.uid).update({ name: name });
         setCheck(!check);
         showMessage({
           message: "Name Updated",

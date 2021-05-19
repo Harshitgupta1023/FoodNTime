@@ -204,13 +204,6 @@ const CartTile = ({
           status ? (
             <View style={styles.bottomContainer}>
               <View style={styles.ratingContainer}>
-                <Icon
-                  name="home"
-                  onPress={() => {
-                    console.log(mealID);
-                    handleRating(mealID);
-                  }}
-                />
                 <Text style={{ fontFamily: "roboto-regular", fontSize: 20 }}>
                   Rating :{"  "}
                 </Text>
@@ -224,10 +217,10 @@ const CartTile = ({
               </View>
               <View style={styles.storeContainer}>
                 <Icon
-                  name="map-outline"
-                  type="ionicon"
+                  name="location-pin"
+                  type="Ionicons"
                   size={25}
-                  color="green"
+                  color="red"
                   containerStyle={{
                     borderWidth: 0.3,
                     borderRadius: 50,

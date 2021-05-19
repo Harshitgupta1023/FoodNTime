@@ -32,6 +32,7 @@ const Cart = (props) => {
   const [orderMeal, setOrderMeal] = useState();
   const [isItems, setIsItems] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
+  const [mealMap, setMealMap] = useState();
 
   var db = Firebase.firestore();
 
@@ -46,19 +47,24 @@ const Cart = (props) => {
     var userData = user.data();
     const { cart, orders } = userData;
     var allMeal = [];
+    var map = {};
     await Promise.all(
       cart.map(async (meal) => {
         try {
           var meals = await db.collection("meals").doc(meal.mealID).get();
-          var meal = meals.data();
-          var newURL = await storage.child(meal.imageURL).getDownloadURL();
-          meal.imageURL = newURL;
-          allMeal.push(meal);
-        } catch (err) {}
+          var mealData = meals.data();
+          var newURL = await storage.child(mealData.imageURL).getDownloadURL();
+          mealData.imageURL = newURL;
+          allMeal.push(mealData);
+          map[meal.mealID] = mealData;
+        } catch (err) {
+          console.log(err);
+        }
       })
     );
     setCart(cart);
     setOrderMeal(allMeal);
+    setMealMap(map);
     setFalseCart(cart);
   };
 
@@ -183,7 +189,6 @@ const Cart = (props) => {
       var newOrder = { meals: orderedMeals };
       newOrder["status"] = false;
       newOrder["userID"] = Firebase.auth().currentUser.uid;
-      newOrder["email"] = Firebase.auth().currentUser.email;
       newOrder["orderTotal"] = totalPrice;
       newOrder["paymentInfo"] = {
         method: "RazorPay Gateway",
@@ -195,32 +200,49 @@ const Cart = (props) => {
       usr = usr.data();
       await db.collection("orders").doc(orderID).set(newOrder);
 
-      const userEntry = {
+      var userEntry = {
         orderID: orderID,
         price: totalPrice,
         date: firebase.firestore.Timestamp.fromDate(new Date()),
         status: false,
       };
       const vendorSet = new Set();
+      var vendorPrice = {};
+      for (var id in mealMap) {
+        if (vendorPrice[mealMap[id].vendorID]) {
+          vendorPrice[mealMap[id].vendorID] +=
+            mealMap[id].price *
+            falseCartItem.filter((meal) => meal.mealID === id)[0].quantity;
+        } else {
+          vendorPrice[mealMap[id].vendorID] =
+            mealMap[id].price *
+            falseCartItem.filter((meal) => meal.mealID === id)[0].quantity;
+        }
+      }
       await Promise.all(
         orderMeal.map(async (meal) => {
           if (!vendorSet.has(meal.vendorID)) {
             vendorSet.add(meal.vendorID);
-            axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
-              email: meal.email,
-              subject: "Order Placed",
-              name: "Store Owner",
-              vendor: true,
-              orderID: orderID,
-              placed: false,
-            });
-
             var vndr = await db.collection("vendors").doc(meal.vendorID).get();
             vndr = vndr.data();
             await db
               .collection("vendors")
               .doc(meal.vendorID)
-              .update({ orders: [...vndr.orders, userEntry] });
+              .update({
+                orders: [
+                  ...vndr.orders,
+                  { ...userEntry, price: vendorPrice[meal.vendorID] },
+                ],
+              });
+
+            axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
+              email: vndr.email,
+              subject: "Order Placed",
+              name: vndr.name,
+              vendor: true,
+              orderID: orderID,
+              placed: false,
+            });
           }
         })
       );
