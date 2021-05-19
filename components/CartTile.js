@@ -76,7 +76,6 @@ const CartTile = ({
       rating: updatedRating,
     });
     setIsRated(true);
-    console.log("done", mealID, ratingValue);
   };
   return (
     <View style={styles.container}>
@@ -204,13 +203,6 @@ const CartTile = ({
           status ? (
             <View style={styles.bottomContainer}>
               <View style={styles.ratingContainer}>
-                <Icon
-                  name="home"
-                  onPress={() => {
-                    console.log(mealID);
-                    handleRating(mealID);
-                  }}
-                />
                 <Text style={{ fontFamily: "roboto-regular", fontSize: 20 }}>
                   Rating :{"  "}
                 </Text>
@@ -236,7 +228,6 @@ const CartTile = ({
                     elevation: 5,
                   }}
                   onPress={() => {
-                    console.log(mealID, meal.storeAddress);
                     setVisible(!visible);
                   }}
                 />
