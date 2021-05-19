@@ -38,7 +38,6 @@ const SignUpScreen = (props) => {
               email: email,
               cart: [],
               orders: [],
-              rating: 5,
             })
             .then(() => {
               console.log("Document successfully written!");
