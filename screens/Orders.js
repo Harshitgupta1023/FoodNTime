@@ -17,7 +17,9 @@ const Orders = (props) => {
 
   const fetchItems = async () => {
     var order = await db.collection("users").doc(user).get();
-    setOrderItem(order.data().orders);
+    var orders = order.data().orders;
+    orders.sort((a, b) => a.date[0] > b.date[0]);
+    setOrderItem(orders);
   };
 
   if (!isLoading) {

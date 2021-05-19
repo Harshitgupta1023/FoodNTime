@@ -22,7 +22,7 @@ const OrderNavigator = () => {
         options={{ headerShown: false }}
       />
       <OrderStack.Screen
-        name="orderDetails"
+        name="Order Details"
         component={VendorOrderDetails}
         options={{ headerShown: false }}
       />
