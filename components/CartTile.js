@@ -40,8 +40,11 @@ const CartTile = ({
         })
       : null;
   };
+
   useEffect(() => {
-    fetchRatingData();
+    {
+      mealID ? fetchRatingData() : null;
+    }
   }, []);
 
   const OverLayComp = (props) => {

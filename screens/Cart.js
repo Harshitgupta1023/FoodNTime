@@ -48,6 +48,7 @@ const Cart = (props) => {
     var userData = user.data();
     const { cart, orders } = userData;
     var allMeal = [];
+    // console.log(cart);
     var map = {};
     await Promise.all(
       cart.map(async (meal) => {
