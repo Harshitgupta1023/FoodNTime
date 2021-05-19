@@ -18,6 +18,7 @@ import DiscountImage from "../components/DiscountImage";
 import VegImage from "../components/VegImage";
 
 import Firebase from "../config/Firebase";
+import { ScrollView } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
@@ -59,8 +60,17 @@ const addToCart = async (mealId) => {
 };
 const MealDetails = (props) => {
   const { mealId, meals } = props.route.params;
-  const { name, discount, price, imageURL, time, nonVeg, starter, dessert } =
-    meals;
+  const {
+    name,
+    discount,
+    price,
+    imageURL,
+    time,
+    nonVeg,
+    starter,
+    dessert,
+    storeAddress,
+  } = meals;
   const rating = meals.rating ? meals.rating[0].rating : 5;
   const courseType = dessert ? "Dessert" : starter ? "Starter" : "Main Course";
   const list = [
@@ -82,6 +92,13 @@ const MealDetails = (props) => {
       icon: "restaurant-outline",
       type: "ionicon",
     },
+
+    {
+      name: "Store Address",
+      realText: storeAddress,
+      icon: "home-outline",
+      type: "ionicon",
+    },
     {
       name: "",
       realText: nonVeg ? "Non-Veg" : "Veg",
@@ -97,34 +114,36 @@ const MealDetails = (props) => {
         {discount === 0 ? null : <DiscountImage discount={discount} />}
         <VegImage nonVeg={nonVeg} width={screenWidth} height={screenHeight} />
       </ImageBackground>
-      <View style={styles.listContainer}>
-        {list.map((l, i) => (
-          <ListItem key={i} bottomDivider>
-            {l.icon ? (
-              <Icon
-                name={l.icon}
-                type={l.type ? l.type : null}
-                style={{ marginLeft: 20 }}
-              />
-            ) : null}
+      <ScrollView>
+        <View style={styles.listContainer}>
+          {list.map((l, i) => (
+            <ListItem bottomDivider key={i}>
+              {l.icon ? (
+                <Icon
+                  name={l.icon}
+                  type={l.type ? l.type : null}
+                  style={{ marginLeft: 20 }}
+                />
+              ) : null}
 
-            {l.avatar ? (
-              <Avatar source={l.avatar} containerStyle={{ marginLeft: 19 }} />
-            ) : null}
+              {l.avatar ? (
+                <Avatar source={l.avatar} containerStyle={{ marginLeft: 19 }} />
+              ) : null}
 
-            <ListItem.Content style={{ marginLeft: 20 }}>
-              {l.name === "" ? null : (
-                <ListItem.Subtitle style={{ fontFamily: "roboto-light" }}>
-                  {l.name}
-                </ListItem.Subtitle>
-              )}
-              <ListItem.Title style={{ fontFamily: "roboto-regular" }}>
-                {l.realText}
-              </ListItem.Title>
-            </ListItem.Content>
-          </ListItem>
-        ))}
-      </View>
+              <ListItem.Content style={{ marginLeft: 20 }}>
+                {l.name === "" ? null : (
+                  <ListItem.Subtitle style={{ fontFamily: "roboto-light" }}>
+                    {l.name}
+                  </ListItem.Subtitle>
+                )}
+                <ListItem.Title style={{ fontFamily: "roboto-regular" }}>
+                  {l.realText}
+                </ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+        </View>
+      </ScrollView>
 
       <View style={styles.ratingContainer}>
         <ListItem>

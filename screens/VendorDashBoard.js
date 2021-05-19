@@ -56,7 +56,6 @@ const VendorDashBoard = (props) => {
     <View style={styles.screen}>
       <ScrollView style={{ width: "100%" }}>
         {mealsId.map((dat) => {
-          console.log();
           return meals.filter((data) => data.id === dat)[0].vendorID ===
             user ? (
             <MealsCard

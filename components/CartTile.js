@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
-import { Icon } from "react-native-elements";
+import { Icon, Overlay } from "react-native-elements";
 import Colors from "../constants/colors";
 import Counter from "./Counter";
 import greenTick from "../assets/greenTick.jpg";
@@ -21,9 +21,28 @@ const CartTile = ({
   vendor,
   orderID,
   handleChangeMealStatus,
+  customer,
 }) => {
   const { imageURL, name, price, quantity, time, status, mealID } = meal;
   const [status0, setStatus0] = useState(status);
+  const [visible, setVisible] = useState(false);
+
+  const OverLayComp = (props) => {
+    return (
+      <Overlay
+        isVisible={visible}
+        onBackdropPress={() => {
+          setVisible(!visible);
+        }}
+        overlayStyle={{ width: screenWidth / 2, padding: 15 }}
+      >
+        <Text>Grab It from :</Text>
+        <Text>{props.address}</Text>
+        <Text></Text>
+        <Text>Thank You!! For Ordering :')' </Text>
+      </Overlay>
+    );
+  };
   const handleStatus = async () => {
     var db = Firebase.firestore().collection("orders").doc(orderID);
     var meals = await db.get();
@@ -36,134 +55,161 @@ const CartTile = ({
     await db.update({
       meals: mealsData,
     });
-    // var status1 = mealsData.filter((dat) => dat.status === false);
-    // var vendorServer = Firebase.firestore().collection("vendors").doc(user);
-    // var vendorss = await vendorServer.get();
-    // var copyVendorData = vendorss.data().orders;
-    // copyVendorData.map((meal) => {
-    //   meal.orderID === orderID
-    //     ? (meal.status = status1.length === 0 ? true : false)
-    //     : (meal.status = meal.status);
-    // });
-    // await vendorServer.update({
-    //   orders: copyVendorData,
-    // });
-    // setFinalVendorStatus(status1.length === 0 ? true : false);
-    // console.log(email);
-    // if (status1.length === 0) {
-    //   axios.post("https://afternoon-wildwood-34561.herokuapp.com/mail/", {
-    //     email: email,
-    //     subject: "Order Ready!!!",
-    //     name: "User",
-    //     vendor: false,
-    //     orderID: orderID,
-    //     placed: true,
-    //   });
-    // }
     handleChangeMealStatus(mealID, !status0);
     setStatus0(!status0);
   };
+
   return (
     <View style={styles.container}>
-      <View
-        style={{
-          flexDirection: "row",
-        }}
-      >
-        <View>
-          <Image style={styles.image} source={{ uri: imageURL }} />
-        </View>
+      <View>
         <View
           style={{
             flexDirection: "row",
-            justifyContent: "space-around",
-            width: "75%",
           }}
         >
-          <View style={styles.textContainer}>
-            <Text style={styles.nameText} numberOfLines={2}>
-              {name}
-            </Text>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.titletime}>{time} min</Text>
-              <Text style={{ ...styles.titletime }}>₹ {price} </Text>
-            </View>
-          </View>
-          <View style={styles.amountContainer}>
-            {noCounter ? (
-              <View style={{ ...styles.counter, justifyContent: "center" }}>
-                <Text style={{ fontFamily: "roboto-light", fontSize: 18 }}>
-                  {quantity} x
-                </Text>
-              </View>
-            ) : (
-              <Counter
-                quantity={quantity}
-                onIncrease={onIncrease}
-                onDecrease={onDecrease}
-              />
-            )}
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-around",
-                width: "100%",
-              }}
-            >
-              <View
-                style={{
-                  ...styles.priceConainer,
-                  width: "60%",
-                  backgroundColor: Colors.accentColor,
-                }}
-              >
-                <Text style={{ fontSize: 16, color: "white" }}>
-                  ₹ {quantity * price}
-                </Text>
-              </View>
-              {status !== undefined ? (
-                <Image
-                  source={status0 ? greenTick : yellowTick}
-                  style={{ width: 30, height: 30 }}
-                />
-              ) : (
-                <Icon
-                  color="red"
-                  name="trash"
-                  type="ionicon"
-                  onPress={() => {
-                    onDel();
-                  }}
-                />
-              )}
-            </View>
-          </View>
-        </View>
-      </View>
-      {vendor ? <View style={{ borderTopWidth: 1, margin: 10 }}></View> : null}
-      {vendor ? (
-        <View style={styles.vendorContainer}>
-          <Text style={styles.vendorText}>Meal Status</Text>
-          <View style={styles.statusOption}>
-            <Text>Processing</Text>
-            <RadioButton
-              status={!status0 ? "checked" : "unchecked"}
-              onPress={() => handleStatus()}
-            />
+          <View>
+            <Image style={styles.image} source={{ uri: imageURL }} />
           </View>
           <View
             style={{
-              ...styles.statusOption,
-              marginHorizontal: 5,
+              flexDirection: "row",
+              justifyContent: "space-around",
+              width: "75%",
             }}
           >
-            <Text>Completed</Text>
-            <RadioButton
-              status={status0 ? "checked" : "unchecked"}
-              onPress={() => handleStatus()}
-            />
+            <View style={styles.textContainer}>
+              <Text style={styles.nameText} numberOfLines={2}>
+                {name}
+              </Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={styles.titletime}>{time} min</Text>
+                <Text style={{ ...styles.titletime }}>₹ {price} </Text>
+              </View>
+            </View>
+            <View style={styles.amountContainer}>
+              {noCounter ? (
+                <View style={{ ...styles.counter, justifyContent: "center" }}>
+                  <Text style={{ fontFamily: "roboto-light", fontSize: 18 }}>
+                    {quantity} x
+                  </Text>
+                </View>
+              ) : (
+                <Counter
+                  quantity={quantity}
+                  onIncrease={onIncrease}
+                  onDecrease={onDecrease}
+                />
+              )}
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-around",
+                  width: "100%",
+                }}
+              >
+                <View
+                  style={{
+                    ...styles.priceConainer,
+                    width: "60%",
+                    backgroundColor: Colors.accentColor,
+                  }}
+                >
+                  <Text style={{ fontSize: 16, color: "white" }}>
+                    ₹ {quantity * price}
+                  </Text>
+                </View>
+                {status !== undefined ? (
+                  <Image
+                    source={status0 ? greenTick : yellowTick}
+                    style={{ width: 30, height: 30 }}
+                  />
+                ) : (
+                  <Icon
+                    color="red"
+                    name="trash"
+                    type="ionicon"
+                    onPress={() => {
+                      onDel();
+                    }}
+                  />
+                )}
+              </View>
+            </View>
           </View>
         </View>
+        {vendor ? (
+          <View style={{ borderTopWidth: 1, margin: 10 }}></View>
+        ) : null}
+        {vendor ? (
+          <View style={styles.vendorContainer}>
+            <Text style={styles.vendorText}>Meal Status</Text>
+            <View style={styles.statusOption}>
+              <Text>Processing</Text>
+              <RadioButton
+                status={!status0 ? "checked" : "unchecked"}
+                onPress={() => handleStatus()}
+              />
+            </View>
+            <View
+              style={{
+                ...styles.statusOption,
+                marginHorizontal: 5,
+              }}
+            >
+              <Text>Completed</Text>
+              <RadioButton
+                status={status0 ? "checked" : "unchecked"}
+                onPress={() => handleStatus()}
+              />
+            </View>
+          </View>
+        ) : null}
+      </View>
+      {/* check 1 if on orders, check 2 if a customer, check3 if status done*/}
+      {noCounter ? (
+        customer ? (
+          status ? (
+            <View
+              style={{
+                borderTopWidth: 1,
+                marginHorizontal: 15,
+                marginTop: 5,
+                marginBottom: 3,
+              }}
+            ></View>
+          ) : null
+        ) : null
+      ) : null}
+      {noCounter ? (
+        customer ? (
+          status ? (
+            <View style={styles.bottomContainer}>
+              <View style={styles.ratingContainer}>
+                <Text>Rating</Text>
+              </View>
+              <View style={styles.storeContainer}>
+                <Icon
+                  name="map-outline"
+                  type="ionicon"
+                  size={25}
+                  color="green"
+                  containerStyle={{
+                    borderWidth: 0.3,
+                    borderRadius: 50,
+                    padding: 5,
+                    backgroundColor: "rgba(250,250,250,1)",
+                    elevation: 5,
+                  }}
+                  onPress={() => {
+                    console.log(mealID, meal.storeAddress);
+                    setVisible(!visible);
+                  }}
+                />
+                {visible ? <OverLayComp address={meal.storeAddress} /> : null}
+              </View>
+            </View>
+          ) : null
+        ) : null
       ) : null}
     </View>
   );
@@ -240,6 +286,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 8,
+  },
+  bottomContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 5,
+  },
+  ratingContainer: {
+    width: "80%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  storeContainer: {
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
   },
 });
 

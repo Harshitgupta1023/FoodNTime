@@ -68,7 +68,7 @@ const OrderDetails = (props) => {
       >
         <ScrollView>
           {finalOrderMeals.map((me, idx) => {
-            return <CartTile meal={me} key={idx} noCounter />;
+            return <CartTile meal={me} key={idx} noCounter customer />;
           })}
         </ScrollView>
       </View>

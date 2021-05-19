@@ -29,7 +29,17 @@ const HomePage = (props) => {
             .child(doc.data().imageURL)
             .getDownloadURL();
           obj[doc.id].imageURL = newURL;
-          reduxObj.push({ id: doc.id, ...obj[doc.id] });
+          var vendorId = doc.data().vendorID;
+          var vendorData = await Firebase.firestore()
+            .collection("vendors")
+            .doc(vendorId)
+            .get();
+
+          reduxObj.push({
+            id: doc.id,
+            ...obj[doc.id],
+            storeAddress: vendorData.data().address,
+          });
         } catch (err) {}
       })
     );
