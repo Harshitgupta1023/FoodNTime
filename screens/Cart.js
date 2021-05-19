@@ -39,6 +39,7 @@ const Cart = (props) => {
   useEffect(() => {
     fetchCartItems();
   }, [isDelete]);
+
   const fetchCartItems = async () => {
     var user = Firebase.auth().currentUser.uid;
     setUserId(user);
