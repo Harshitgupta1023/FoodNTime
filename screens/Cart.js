@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button, Dimensions } from "react-native";
+import { ActivityIndicator, Colors } from "react-native-paper";
 import axios from "axios";
 
 import AppLoading from "expo-app-loading";
@@ -340,13 +341,13 @@ const Cart = (props) => {
               height: "20%",
               borderRadius: 5,
               elevation: 2,
-              marginVertical: 10,
+              marginVertical: 5,
               marginHorizontal: 5,
             }}
           >
             <Text
               style={{
-                ...styles.title,
+                marginTop: 10,
                 textAlign: "left",
                 fontFamily: "roboto-light",
                 fontSize: 25,
@@ -363,7 +364,11 @@ const Cart = (props) => {
                 ₹ {totalPrice}
               </Text>
             </Text>
-
+            <ActivityIndicator
+              animating={isPressed}
+              size="small"
+              color={Colors.red800}
+            />
             <Button
               title="Proceed To Checkout"
               disabled={isPressed}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, ScrollView, Text, StyleSheet } from "react-native";
-import { FAB } from "react-native-paper";
+import { FAB, Colors } from "react-native-paper";
 import Firebase from "../config/Firebase";
 import AppLoading from "expo-app-loading";
 
@@ -68,13 +68,13 @@ const VendorDashBoard = (props) => {
           ) : null;
         })}
       </ScrollView>
-      <View style={styles.fab}>
-        <FAB
-          large
-          icon="plus"
-          onPress={() => props.navigation.navigate("Add Meal")}
-        />
-      </View>
+      <FAB
+        large
+        icon="plus"
+        color="white"
+        style={styles.fab}
+        onPress={() => props.navigation.navigate("Add Meal")}
+      />
     </View>
   );
 };
@@ -86,8 +86,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   fab: {
-    paddingLeft: "70%",
-    paddingVertical: 10,
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: Colors.blue600,
   },
 });
 
