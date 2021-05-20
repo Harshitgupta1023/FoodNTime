@@ -40,6 +40,7 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
       }
     }
   };
+
   const ratingData = rating;
   var ratingValue = ratingData ? 0 : 5;
   ratingData
