@@ -39,6 +39,7 @@ const Cart = (props) => {
   useEffect(() => {
     fetchCartItems();
   }, [isDelete]);
+
   const fetchCartItems = async () => {
     var user = Firebase.auth().currentUser.uid;
     setUserId(user);
@@ -47,6 +48,7 @@ const Cart = (props) => {
     var userData = user.data();
     const { cart, orders } = userData;
     var allMeal = [];
+    // console.log(cart);
     var map = {};
     await Promise.all(
       cart.map(async (meal) => {

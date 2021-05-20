@@ -60,6 +60,7 @@ const addToCart = async (mealId) => {
 };
 const MealDetails = (props) => {
   const { mealId, meals } = props.route.params;
+
   const {
     name,
     discount,
@@ -71,6 +72,7 @@ const MealDetails = (props) => {
     dessert,
     storeAddress,
   } = meals;
+
   const ratingData = meals.rating;
   var rating = ratingData ? 0 : 5;
   ratingData
@@ -112,7 +114,8 @@ const MealDetails = (props) => {
   ];
   useEffect(() => {
     props.navigation.setOptions({ title: name });
-  });
+    // props.navigation.setParams({});
+  }, []);
   return (
     <View>
       <ImageBackground style={styles.mainImage} source={{ uri: imageURL }}>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 import { Icon, Overlay, Rating } from "react-native-elements";
@@ -27,9 +27,25 @@ const CartTile = ({
 
   const [status0, setStatus0] = useState(status);
   const [visible, setVisible] = useState(false);
-  const [isRated, setIsRated] = useState(false);
+  const [intialRating, setInitialRating] = useState(0);
 
   const user = Firebase.auth().currentUser.uid;
+
+  const fetchRatingData = async () => {
+    var db = await Firebase.firestore().collection("meals").doc(mealID).get();
+    var userRatingData = db.data().rating;
+    userRatingData
+      ? userRatingData.map((dat) => {
+          dat.userID === user ? setInitialRating(dat.value) : null;
+        })
+      : null;
+  };
+
+  useEffect(() => {
+    {
+      mealID ? fetchRatingData() : null;
+    }
+  }, []);
 
   const OverLayComp = (props) => {
     return (
@@ -75,8 +91,6 @@ const CartTile = ({
     await db.update({
       rating: updatedRating,
     });
-    setIsRated(true);
-    console.log("done", mealID, ratingValue);
   };
   return (
     <View style={styles.container}>
@@ -210,8 +224,7 @@ const CartTile = ({
                 <Rating
                   type="custom"
                   imageSize={25}
-                  startingValue={0}
-                  readonly={isRated}
+                  startingValue={intialRating}
                   onFinishRating={(rating) => handleRating(mealID, rating)}
                 />
               </View>
@@ -229,7 +242,6 @@ const CartTile = ({
                     elevation: 5,
                   }}
                   onPress={() => {
-                    console.log(mealID, meal.storeAddress);
                     setVisible(!visible);
                   }}
                 />

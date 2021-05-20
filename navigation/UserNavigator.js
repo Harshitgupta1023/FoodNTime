@@ -109,15 +109,17 @@ const UserNavigator = () => {
             getFocusedRouteNameFromRoute(route) === "undefined"
               ? "Meals"
               : getFocusedRouteNameFromRoute(route),
-          headerRight: () => (
-            <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
-              <Item
-                title="fav"
-                iconName="cart-outline"
-                onPress={() => navigation.navigate("Cart")}
-              />
-            </HeaderButtons>
-          ),
+          headerRight: () => {
+            return (
+              <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
+                <Item
+                  title="fav"
+                  iconName="cart-outline"
+                  onPress={() => navigation.navigate("Cart")}
+                />
+              </HeaderButtons>
+            );
+          },
           headerLeft: () => (
             <HeaderButtons HeaderButtonComponent={HeaderButtonss}>
               <Item
