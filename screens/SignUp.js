@@ -77,7 +77,6 @@ const SignUpScreen = (props) => {
         type: "danger",
       });
     }
-
     setIsLoading(false);
   };
 

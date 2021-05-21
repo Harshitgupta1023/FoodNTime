@@ -79,8 +79,8 @@ const MealDetails = (props) => {
     ? ratingData.map((dat) => (rating = rating + parseInt(dat.value)))
     : null;
   rating =
-    rating === 5
-      ? 0
+    rating === 0
+      ? 5
       : Math.round((rating / (ratingData ? ratingData.length : 1)) * 10) / 10;
   const courseType = dessert ? "Dessert" : starter ? "Starter" : "Main Course";
   const list = [
