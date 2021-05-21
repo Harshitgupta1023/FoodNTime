@@ -21,11 +21,11 @@ const StartUpScreen = (props) => {
             .get()
             .then((doc) => {
               if (doc.exists) {
-                etPress(false);
+                setPress(false);
                 props.navigation.replace("Food N Time");
               } else {
                 // doc.data() will be undefined in this case
-                etPress(false);
+                setPress(false);
                 props.navigation.replace("Vendor Dashboard");
               }
             });
