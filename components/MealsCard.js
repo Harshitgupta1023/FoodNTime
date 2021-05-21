@@ -15,7 +15,6 @@ import SoldOutImage from "./SoldOutImage";
 import { AntDesign } from "@expo/vector-icons";
 import Colors from "../constants/colors";
 import { showMessage } from "react-native-flash-message";
-import Firebase from "../config/Firebase";
 
 const MealsCard = ({ meals, navigation, mealId, vendor }) => {
   // console.log(meals);
@@ -46,7 +45,10 @@ const MealsCard = ({ meals, navigation, mealId, vendor }) => {
     ? ratingData.map((dat) => (ratingValue = ratingValue + parseInt(dat.value)))
     : null;
   ratingValue =
-    ratingValue === 0 ? 0 : ratingValue / (ratingData ? ratingData.length : 1);
+    ratingValue === 0
+      ? 5
+      : Math.round((ratingValue / (ratingData ? ratingData.length : 1)) * 10) /
+        10;
 
   return (
     <TouchableCmp onPress={Openable}>
