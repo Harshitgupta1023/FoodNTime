@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { View, Text, StyleSheet, Image, Dimensions } from "react-native";
 import { Icon, Overlay, Rating } from "react-native-elements";
 import Colors from "../constants/colors";
@@ -36,7 +35,7 @@ const CartTile = ({
     var userRatingData = db.data().rating;
     userRatingData
       ? userRatingData.map((dat) => {
-          dat.userID === user ? setInitialRating(dat.value) : null;
+          dat.orderID === orderID ? setInitialRating(dat.value) : null;
         })
       : null;
   };
@@ -85,8 +84,12 @@ const CartTile = ({
     var ratin = await db.get();
     var ratingData =
       ratin.data().rating === undefined ? [] : ratin.data().rating;
-    var filteredData = ratingData.filter((dat) => dat.userID !== user);
-    var updatedRating = [...filteredData, { userID: user, value: ratingValue }];
+    var filteredData = ratingData.filter((dat) => dat.orderID !== orderID);
+    var updatedRating = [
+      ...filteredData,
+      { orderID: orderID, value: ratingValue },
+    ];
+    console.log(updatedRating);
     // ERROR baar baar kar skte change .
     await db.update({
       rating: updatedRating,
