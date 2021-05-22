@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Button, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Dimensions,
+  Modal,
+  Alert,
+} from "react-native";
 import { ActivityIndicator, Colors } from "react-native-paper";
 import axios from "axios";
 
@@ -34,6 +42,8 @@ const Cart = (props) => {
   const [isItems, setIsItems] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [mealMap, setMealMap] = useState();
+
+  const [modalVisible, setModalVisible] = useState(false);
 
   var db = Firebase.firestore();
 
@@ -259,6 +269,7 @@ const Cart = (props) => {
         orderID: orderID,
         placed: false,
       });
+
       showMessage({
         message: "Order Placed",
         description: "Your Order was Successfully placed",
@@ -363,15 +374,30 @@ const Cart = (props) => {
                 ₹ {totalPrice}
               </Text>
             </Text>
-            <ActivityIndicator
-              animating={isPressed}
-              size="small"
-              color={Colors.red800}
-            />
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert("Modal has been closed.");
+                setModalVisible(!modalVisible);
+              }}
+            >
+              <View style={styles.centeredView}>
+                <ActivityIndicator
+                  animating={isPressed}
+                  size="large"
+                  color={Colors.red800}
+                />
+              </View>
+            </Modal>
             <Button
               title="Proceed To Checkout"
               disabled={isPressed}
-              onPress={() => finalCheckout()}
+              onPress={() => {
+                finalCheckout();
+                setModalVisible(!modalVisible);
+              }}
             />
           </View>
         </View>
@@ -394,6 +420,12 @@ const styles = StyleSheet.create({
     fontSize: 22,
     margin: 15,
     textAlign: "center",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
   },
 });
 
