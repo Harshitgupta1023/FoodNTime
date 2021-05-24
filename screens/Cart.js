@@ -6,7 +6,6 @@ import {
   Button,
   Dimensions,
   Modal,
-  Alert,
 } from "react-native";
 import { ActivityIndicator, Colors } from "react-native-paper";
 import axios from "axios";
@@ -42,8 +41,6 @@ const Cart = (props) => {
   const [isItems, setIsItems] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
   const [mealMap, setMealMap] = useState();
-
-  const [modalVisible, setModalVisible] = useState(false);
 
   var db = Firebase.firestore();
 
@@ -374,15 +371,7 @@ const Cart = (props) => {
                 ₹ {totalPrice}
               </Text>
             </Text>
-            <Modal
-              animationType="slide"
-              transparent={true}
-              visible={modalVisible}
-              onRequestClose={() => {
-                Alert.alert("Modal has been closed.");
-                setModalVisible(!modalVisible);
-              }}
-            >
+            <Modal animationType="slide" transparent={true} visible={isPressed}>
               <View style={styles.centeredView}>
                 <ActivityIndicator
                   animating={isPressed}
@@ -394,10 +383,7 @@ const Cart = (props) => {
             <Button
               title="Proceed To Checkout"
               disabled={isPressed}
-              onPress={() => {
-                finalCheckout();
-                setModalVisible(!modalVisible);
-              }}
+              onPress={finalCheckout}
             />
           </View>
         </View>
